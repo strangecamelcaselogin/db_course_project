@@ -1,0 +1,180 @@
+﻿body
+{ 
+  background: #ffffff;
+  margin: 0px!important;
+}
+
+.fig 
+{
+   text-align: center; /* Выравнивание по центру */ 
+}
+
+.interval1
+{
+line-height: 2.9;
+}
+
+.blockinfo
+{
+font-size: 20px;
+font-family: serif;
+text-indent: 20px;
+text-align: justify
+}
+
+h1
+{
+font-size: 30px;
+font-family: arial;
+text-indent: 10px;
+text-align: center
+}
+h2
+{
+font-size: 25px;
+font-family: arial;
+text-align: center
+}
+
+nav
+{
+  display: block;
+  margin: 0 auto;
+  background-color: #ffffff;
+  background-attachment: fixed;
+  background-repeat: repeat;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  /*box-shadow: 0 1px 1px rgba(10, 10, 10, 0.2);*/
+  outline: none;
+  font-weight: bold;
+  color: #8a6000;
+}
+
+#ddmenu 
+{
+  display: block;
+  margin: 0 auto;
+  padding: 0 10px;
+  background-attachment: fixed;
+  background-repeat: repeat;
+  outline: none;
+  cursor: pointer;
+  font-weight: bold;
+  /*color: #000000;*/
+}
+
+#ddmenu li 
+{ 
+  display: inline-block; 
+  position: relative; 
+  padding-left: 0px!important;
+  padding-right: 0px!important;
+  float: left; 
+  font-size: 1.6em; 
+ text-shadow: #ffe 1px 0px, #ffe 1px 1px, #ffe 0px 1px, #ffe -1px 1px, #ffe -1px  0px, #ffe -1px -1px, #ffe 0px -1px, #ffe 1px -1px;
+  border-right: 1px solid #dae0e5; 
+}
+
+#ddmenu :last-child
+{
+ float: none!important
+}
+
+#ddmenu li a 
+{
+  display: block;
+  float: left;
+  text-align: center;
+  line-height: 78px;
+  font-weight: Arial;
+  text-decoration: none;
+  color: #1479e0 ;
+  -webkit-transition: all 0.2s linear;
+  -moz-transition: all 0.2s linear;
+  -o-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+}
+
+/*выделенная ссылка*/
+#ddmenu li:hover > a { color: #0996c0; background: #989ea0; opacity: 0.9}
+
+#ddmenu ul 
+{
+  position: absolute;
+  background: #dee;
+  display: none;
+  margin: 0;
+  padding: 7px 0;
+  list-style: none;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 1 1 5px rgba(0, 0, 0, 0.2);
+  z-index:9999
+}
+
+
+/* Стрелочки */
+#ddmenu ul:after {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  bottom: 100%;
+  left: 8px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: #dee transparent; 
+}
+
+/*  */
+#ddmenu ul:before {
+  content: "";
+  width: 0;
+  height: 0;
+  position: absolute;
+  bottom: 100%;
+  left: 4px;
+  border-width: 0 10px 10px 10px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.1) transparent;  
+}
+
+/*управление элементами списка*/
+#ddmenu ul li { 
+  display: block; 
+  width: 100%; 
+  font-size: 0.9em; 
+  text-shadow: 1px 1px 0 #fff;
+}
+
+/*управление ссылками*/
+#ddmenu ul li a {
+  display: block;
+  width: 100%;
+  padding: 6px 7px;
+  line-height: 1.4em;
+  -webkit-transition: all 0.2s linear;
+  -moz-transition: all 0.2s linear;
+  -o-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+}
+
+/*подсветка ссылки всплывающего меню*/
+#ddmenu ul li a:hover {
+  background: #699189;
+}
+div .form-group
+{
+padding-left: 25%;
+padding-right: 25%;
+}
+div .form-group div
+{
+padding-left: 5%;
+padding-right: 5%;
+}
+#ddmenu li .col-sm-2
+{
+padding-left: 0px!important;
+padding-right: 0px!important;
+}

@@ -1,0 +1,26 @@
+﻿<html>
+	<head>
+		{% if title %}
+		<title>{{title}} - Car</title>
+		{% else %}
+		<title>Car</title>
+		{% endif %}
+	</head>
+	<link rel='stylesheet' href='static/bootstrap.min.css' type='text/css' media='all'>
+	<link rel='stylesheet' href='static/style.css' type='text/css' media='all'>
+ <body>
+    <nav>
+		<ul id="ddmenu" class="nav nav-tabs">
+		<div class="row">
+		<li class="active col-sm-2 "><a href="Index.html">Главная</a></li>
+		<li class="col-sm-2"><a href="Box.html">Боксы</a>
+		<li class="col-sm-2"><a href="Service.html">Услуги</a></li>
+		<li class="col-sm-2"><a href="Mark.html">Марки</a></li>
+		<li class="col-sm-2"><a href="Ref.html">Справки</a></li>
+		<li class="col-sm-2"><a href="Registration.html">Регистрация</a></li>
+		</div>
+		</ul>
+	</nav>
+    {% block content %}{% endblock %}
+  </body>
+</html>

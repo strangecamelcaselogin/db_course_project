@@ -1,0 +1,42 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid" style="padding: 15px">
+	<h2>Прием в эксплуатацию нового бокса</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="acceptance" role="form">
+		 <div class="form-group">
+			<label for="cod">Код бокса</label>
+			<input type="text" class="form-control" id="cod" placeholder="Введите код">
+		 </div>
+		 <div class="form-group">
+			<label for="mark">Марка</label>
+			<input type="text" class="form-control" id="mark" placeholder="Выберите марку">
+		 </div>
+		 <div class="form-group">
+			<label for="pay">Цена</label>
+			<input type="text" class="form-control" id="pay" placeholder="Назначте цену">
+		 </div>
+		 <div class="form-group">
+			<label for="flag">Состояние</label>
+			<select class="form-control" id="flag">
+				<option>Свободен</option>
+				<option>Закрыт</option>
+				<option>Занят</option>
+			</select>
+		 </div>
+		 <button type="submit" class="btn btn-success">Принять</button>
+		</form>
+	</div>
+	<hr>
+	<h2>Закрытие бокса</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="close" role="form">
+		 <div class="form-group">
+			<label for="cod_box">Код бокса</label>
+			<input type="text" class="form-control" id="cod_box" placeholder="Введите код">
+		 </div>
+		 <button type="submit" class="btn btn-success">Закрыть</button>
+		</form>
+	</div>
+</div>
+{% endblock %}
