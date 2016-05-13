@@ -4,15 +4,15 @@ from wtforms.validators import DataRequired, Length, ValidationError
 
 
 Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm')
-print(Symbols)
+
 
 class LoginForm(Form):
-    def passValidator(self, field):
-        password = field.data  # str
+    @staticmethod
+    def pass_validator(field):
+        password = field.data
         for symbol in password:
             if symbol not in Symbols:
-                print('nope')
-                raise ValidationError('chmod')
+                raise ValidationError('Недопустимый символ')
 
     login = StringField('Логин', [DataRequired(), Length(min=4, max=32)])
-    password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), passValidator])
+    password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), pass_validator])
