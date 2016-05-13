@@ -1,14 +1,20 @@
 from flask import Flask
-from flask import render_template
-from flask import session, redirect, url_for, escape, request
+from flask import render_template, redirect, \
+    request, session, url_for, escape
 
 from loginform import LoginForm
+
+
 app = Flask(__name__)
+
+
+@app.route('/Index.html')
+def main():
+    return redirect('/')
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-
     form = LoginForm(request.form)
 
     if request.method == 'POST':
@@ -20,11 +26,6 @@ def index():
             print('not valid')
 
     return render_template('index.html', form=form)
-
-
-@app.route('/Index.html')
-def main():
-    return redirect('/')
 
 
 if __name__ == '__main__':
