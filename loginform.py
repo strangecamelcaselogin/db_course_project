@@ -3,12 +3,11 @@ from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Length, ValidationError
 
 
-Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm')
+Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm0123456789@')
 
 
 class LoginForm(Form):
-    @staticmethod
-    def pass_validator(field):
+    def pass_validator(self, field):
         password = field.data
         for symbol in password:
             if symbol not in Symbols:
