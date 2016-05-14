@@ -1,17 +1,25 @@
-<html><head><title>Car</title><link rel='stylesheet' href='static/bootstrap.min.css' type='text/css' media='all'><link rel='stylesheet' href='static/style.css' type='text/css' media='all'><link rel="icon" type="image/vnd.microsoft.icon" href="static/favicon.ico"/></head>
+<html>
+<head>
+    <title>Car</title>
+    <link rel='stylesheet' href='static/bootstrap.min.css' type='text/css' media='all'>
+    <link rel='stylesheet' href='static/style.css' type='text/css' media='all'>
+    <link rel="icon" type="image/vnd.microsoft.icon" href="static/favicon.ico"/>
+</head>
  <body>
     <nav>
-		<ul id="ddmenu" class="nav nav-tabs">
-		<li class="active col-sm-2 "><a href="Index.html">Главная</a></li>
-		<li class="col-sm-2"><a href="Box.html">Боксы</a>
-		<li class="col-sm-2"><a href="Service.html">Услуги</a></li>
-		<li class="col-sm-2"><a href="Mark.html">Марки</a></li>
-		<li class="col-sm-2"><a href="Ref.html">Справки</a></li>
-		<li class="col-sm-2"><a href="Login.html">Вход</a></li>
+		<ul id="ddmenu" class="nav">
+		<li class="col-sm-2 "><a href="/" data-toggle="tab">Главная</a></li>
+		<li class="col-sm-2"><a href="Box" data-toggle="tab">Боксы</a>
+		<li class="col-sm-2"><a href="Service" data-toggle="tab">Услуги</a></li>
+		<li class="col-sm-2"><a href="Mark" data-toggle="tab">Марки</a></li>
+		<li class="col-sm-2"><a href="Ref" data-toggle="tab">Справки</a></li>
+		<li class="col-sm-2"><a href="Login" data-toggle="tab">Вход</a></li>
 		</ul>
 	</nav>
 	<div class="container">
-    {% block content %}{% endblock %}
+        <div class="tab-content">
+            {% block content %}{% endblock %}
+        </div>
 	</div>
   </body>
 </html>
