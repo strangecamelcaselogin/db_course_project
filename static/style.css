@@ -98,11 +98,18 @@ nav
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus
 {
-color: #000!important;
+    color: #000!important;
 }
+
+.nav-tabs>li.active>a:active, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus
+{
+    color: #000!important;
+    background: #fff!important;
+}
+
 #ddmenu li:hover > a { color: #000!important; background: #989ea0; opacity: 0.9}
 
-#ddmenu li a:active { color: #000!important; background: #fff!important;}
+#ddmenu li:active { color: #000!important; background: #fff!important;}
 
 #ddmenu ul 
 {
