@@ -8,43 +8,37 @@ from loginform import LoginForm
 app = Flask(__name__)
 
 
-
-@app.route('/Index.html')
-def main():
-    return redirect('/')
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/Box')
+@app.route('/box')
 def box():
     return render_template('Box.html')
 
 
-@app.route('/Service')
+@app.route('/service')
 def service():
     
     return render_template('Service.html')
 
-@app.route('/Ref')
+@app.route('/ref')
 def ref():
     return render_template('Ref.html')
 
 
-@app.route('/Mark')
+@app.route('/mark')
 def mark():
     return render_template('Mark.html')
 
 
-@app.route('/Registration.html')
+@app.route('/registration')
 def registration():
     return render_template("Registration.html")
 
 
-@app.route('/Login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
 
