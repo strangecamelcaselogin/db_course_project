@@ -1,8 +1,8 @@
 ﻿body
 { 
-  background: url('back.jpg') no-repeat fixed;
+  background: #fff;
   margin: 0px!important;
-  color: #f3f3f4;
+  color: #030304;
 }
 
 .fig 
@@ -45,11 +45,9 @@ nav
   opacity: 0.9;
   background-attachment: fixed;
   background-repeat: repeat;
-  border: 1px solid rgba(0, 0, 0, 0.10);
   /*box-shadow: 0 1px 1px rgba(10, 10, 10, 0.2);*/
   outline: none;
   font-weight: bold;
-  color: #8a6000;
 }
 
 #ddmenu 
@@ -62,7 +60,7 @@ nav
   outline: none;
   cursor: pointer;
   font-weight: bold;
-  /*color: #000000;*/
+  color: #fff;
 }
 
 #ddmenu li 
@@ -73,8 +71,7 @@ nav
   padding-right: 0px!important;
   float: left; 
   font-size: 1.6em; 
- text-shadow: #ffe 1px 0px, #ffe 1px 1px, #ffe 0px 1px, #ffe -1px 1px, #ffe -1px  0px, #ffe -1px -1px, #ffe 0px -1px, #ffe 1px -1px;
-  border-right: 1px solid #dae0e5; 
+  /*text-shadow: #ffe 1px 0px, #ffe 1px 1px, #ffe 0px 1px, #ffe -1px 1px, #ffe -1px  0px, #ffe -1px -1px, #ffe 0px -1px, #ffe 1px -1px;*/
 }
 
 #ddmenu :last-child
@@ -90,15 +87,19 @@ nav
   line-height: 78px;
   font-weight: Arial;
   text-decoration: none;
-  color: #1479e0 ;
   -webkit-transition: all 0.2s linear;
   -moz-transition: all 0.2s linear;
   -o-transition: all 0.2s linear;
   transition: all 0.2s linear;
 }
 
+
 /*выделенная ссылка*/
-#ddmenu li:hover > a { color: #0996c0; background: #989ea0; opacity: 0.9}
+.nav-tabs>li.active>a
+{
+color: #000!important;
+}
+#ddmenu li:hover > a { color: #000!important; background: #989ea0; opacity: 0.9}
 
 #ddmenu ul 
 {
@@ -114,32 +115,6 @@ nav
   z-index:9999
 }
 
-
-/* Стрелочки */
-#ddmenu ul:after {
-  content: "";
-  width: 0;
-  height: 0;
-  position: absolute;
-  bottom: 100%;
-  left: 8px;
-  border-width: 0 8px 8px 8px;
-  border-style: solid;
-  border-color: #dee transparent; 
-}
-
-/*  */
-#ddmenu ul:before {
-  content: "";
-  width: 0;
-  height: 0;
-  position: absolute;
-  bottom: 100%;
-  left: 4px;
-  border-width: 0 10px 10px 10px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.1) transparent;  
-}
 
 /*управление элементами списка*/
 #ddmenu ul li { 
@@ -161,10 +136,6 @@ nav
   transition: all 0.2s linear;
 }
 
-/*подсветка ссылки всплывающего меню*/
-#ddmenu ul li a:hover {
-  background: #699189;
-}
 div .form-group
 {
 padding-left: 25%;
@@ -175,8 +146,24 @@ div .form-group div
 padding-left: 5%;
 padding-right: 5%;
 }
+div .container
+{
+    background: #111111;
+    opacity: 0.7;
+    margin-top: 25px;
+    width: 66%;
+
+}
 #ddmenu li .col-sm-2
 {
 padding-left: 0px!important;
 padding-right: 0px!important;
+}
+li a:active
+{
+color: #000;
+}
+a
+{
+ color: #fff;
 }
