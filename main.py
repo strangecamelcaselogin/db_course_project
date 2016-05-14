@@ -6,15 +6,22 @@ from loginform import LoginForm
 
 
 app = Flask(__name__)
+#app.secret_key = 'WarWARWar'
 
 
+@app.route('/')
 @app.route('/Index.html')
-def main():
-    return redirect('/')
-
-
-@app.route('/', methods=['GET', 'POST'])
 def index():
+    return render_template('index.html')
+
+
+@app.route('/Registration.html')
+def registration():
+    return render_template('Registration.html')
+
+
+@app.route('/Login.html', methods=['GET', 'POST'])
+def login():
     form = LoginForm(request.form)
 
     if request.method == 'POST':
@@ -25,9 +32,9 @@ def index():
         else:
             print('not valid')
 
-    return render_template('index.html', form=form)
+    return render_template('Login.html', form=form)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
 
