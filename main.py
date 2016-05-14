@@ -26,6 +26,7 @@ def box():
 
 @app.route('/Service')
 def service():
+    
     return render_template('Service.html')
 
 @app.route('/Ref')
