@@ -1,12 +1,12 @@
-﻿{% extends "base.html" %}
+﻿{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
 	<h2>Добавить марку в перечень</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="mark_add" role="form">
 		 <div class="form-group">
-			<label for="mark_name">Название марки</label>
-			<input type="text" class="form-control" id="mark_name" placeholder="Введите код">
+			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
 		 </div>
 		 <button type="submit" class="btn btn-success">Добавить</button>
 		</form>
@@ -17,7 +17,7 @@
 		<form name="mark_del" role="form">
 		 <div class="form-group">
 		 <!-- Тут будет список -->
-			<label for="list_mark">Марка</label>
+			<label for="list_mark">Выберите марку</label>
 			<select class="form-control" id="list_mark">
 			</select>
 		 </div>
