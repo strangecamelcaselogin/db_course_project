@@ -1,20 +1,18 @@
-﻿{% extends "base.html" %}
+﻿{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
 	<h2>Прием в эксплуатацию нового бокса</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="acceptance" role="form">
 		 <div class="form-group">
-			<label for="cod">Код бокса</label>
-			<input type="text" class="form-control" id="cod" placeholder="Введите код">
+			{{ render_field(form['cod_box_open'], data_toggle='tooltip') }}
 		 </div>
 		 <div class="form-group">
-			<label for="mark">Марка</label>
-			<input type="text" class="form-control" id="mark" placeholder="Выберите марку">
+			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
 		 </div>
 		 <div class="form-group">
-			<label for="pay">Цена</label>
-			<input type="text" class="form-control" id="pay" placeholder="Назначте цену">
+			{{ render_field(form['prise'], data_toggle='tooltip') }}
 		 </div>
 		 <div class="form-group">
 			<label for="flag">Состояние</label>
@@ -32,8 +30,7 @@
 	<div class="form-group" style="text-align: center">
 		<form name="close" role="form">
 		 <div class="form-group">
-			<label for="cod_box">Код бокса</label>
-			<input type="text" class="form-control" id="cod_box" placeholder="Введите код">
+			{{ render_field(form['cod_box_close'], data_toggle='tooltip') }}
 		 </div>
 		 <button type="submit" class="btn btn-success">Закрыть</button>
 		</form>
