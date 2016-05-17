@@ -5,6 +5,7 @@ from wtforms.validators import DataRequired, Length, ValidationError
 
 Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm0123456789@')
 
+
 mappers = {
     "A": '1',
     "B": '2',
