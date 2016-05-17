@@ -5,17 +5,21 @@ from wtforms.validators import DataRequired, Length, ValidationError
 
 Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm0123456789@')
 
+mappers = {
+    "A": '1',
+    "B": '2',
+    "C": '3'
+}
 
 class LoginForm(Form):
-    def pass_validator(self, field):
+    def password_validator(self, field):
         password = field.data
         for symbol in password:
             if symbol not in Symbols:
                 raise ValidationError('Недопустимый символ')
 
     login = StringField('Логин', [DataRequired(), Length(min=4, max=32)])
-    password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), pass_validator])
-
+    password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator])
 
 class RegForm(Form):
     name = StringField('Имя', [DataRequired(), Length(min=1, max=32)])
@@ -40,7 +44,7 @@ class ServiceForm(Form):
 
 
 class MarkForm(Form):
-    opt_list = SelectField ('Марка', choices=['1','3','7'])
+    mark_list = SelectField ('Марка', choices=[(list(mappers.keys())[i],list(mappers.keys())[i]) for i in range(len(mappers.keys()))])
     mark_name = StringField ('Название марки', [DataRequired(), Length(min=1, max=32)])
 
 class RefForm(Form):

@@ -7,7 +7,7 @@ from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefFor
 
 app = Flask(__name__)
 
-
+#!
 
 @app.route('/Index.html')
 def main():
@@ -65,7 +65,7 @@ def mark():
     if request.method == 'POST':
         if form.validate():
             print('logined:')
-            #print(request.form['cod_owner'])
+            print(request.form)
 
         else:
             print('not valid')
