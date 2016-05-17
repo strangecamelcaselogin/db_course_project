@@ -44,7 +44,9 @@ class ServiceForm(Form):
 
 
 class MarkForm(Form):
+
     mark_list = SelectField ('Марка', choices=[(list(mappers.keys())[i],list(mappers.keys())[i]) for i in range(len(mappers.keys()))])
+    #opt_list = SelectField ('Марка', choices=['1','3','7'])
     mark_name = StringField ('Название марки', [DataRequired(), Length(min=1, max=32)])
 
 class RefForm(Form):
