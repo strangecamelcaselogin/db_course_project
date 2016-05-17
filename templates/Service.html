@@ -4,7 +4,7 @@
 <div class="container-fluid" style="padding: 15px">
 	<h2>Предоставить бокс клиенту</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="box_owner" role="form">
+		<form name="box_owner" role="form" method="post">
 		 <div class="form-group">
 			{{ render_field(form['cod_owner'], data_toggle='tooltip') }}
 		 </div>
@@ -39,7 +39,7 @@
 	<hr>
 	<h2>Удалить клиента из бокса</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="del_owner" role="form">
+		<form name="del_owner" role="form" method="post">
 		 <div class="form-group">
 			{{ render_field(form['cod_receipt'], data_toggle='tooltip') }}
 		 </div>

@@ -4,7 +4,8 @@
 <div class="container-fluid" style="padding: 15px">
     <h2>Спарвка о свободных боксах</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="ref_freebox" role="form">
+
+		<form name="ref_freebox" role="form" method="post">
 		 <div class="form-group">
 		 <button type="submit" class="btn btn-success">Получить список свободных боксов</button>
 		 </div>
@@ -14,11 +15,13 @@
 			</select>
 		 </div>
 		</form>
+
 	</div>
 	<hr>
 	<h2>Справка об определенном боксе</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="ref_mark_box" role="form">
+
+		<form name="ref_mark_box" role="form" method="post">
 		 <div class="form-group">
 			{{ render_field(form['cod_box'], data_toggle='tooltip') }}
 		 </div>
@@ -29,11 +32,13 @@
 			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
 		 </div>
 		</form>
+
 	</div>
 	<hr>
 	<h2>Справка о марках машин</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="ref_mark" role="form">
+
+		<form name="ref_mark" role="form" method="post">
 		 <div class="form-group">
 		 <button type="submit" class="btn btn-success">Получить список марок</button>
 		 </div>
@@ -43,11 +48,13 @@
 			</select>
 		 </div>
 		</form>
+
 	</div>
 	<hr>
 	<h2>Справка о клиентах</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="ref_owner" role="form">
+
+		<form name="ref_owner" role="form" method="post">
 		 <div class="form-group">
 		 <button type="submit" class="btn btn-success">Получить список клиентов</button>
 		 </div>
@@ -57,11 +64,13 @@
 			</select>
 		 </div>
 		</form>
+
 	</div>
 	<hr>
 	<h2>Справка о клиентах с определенной маркой автомобиля</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="ref_mark_owner" role="form">
+
+		<form name="ref_mark_owner" role="form" method="post">
 		 <div class="form-group">
 			<label for="list_mark">Марка</label>
 			<select class="form-control" id="list_mark">
@@ -80,7 +89,7 @@
 	<hr>
 	<h2>Справка о клиентах, у который срок аренды истекает к указанной дате</h2>
 	<div class="form-group" style="text-align: center">
-		<form name="ref_owner_date" role="form">
+		<form name="ref_owner_date" role="form" method="post">
 		 <div class="form-group">
 			{{ render_field(form['date_end'], data_toggle='tooltip') }}
 		 </div>
