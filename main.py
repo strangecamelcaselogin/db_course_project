@@ -7,13 +7,9 @@ from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefFor
 
 app = Flask(__name__)
 
-#!
+user = {}
 
-@app.route('/Index.html')
-def main():
-    return redirect('/')
-
-
+@app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html')
@@ -28,7 +24,7 @@ def box():
             print(request.form['cod_name'])
 
         else:
-            print('not valid')
+            print('not valid form: box')
     return render_template('Box.html', form=form)
 
 
@@ -41,8 +37,9 @@ def service():
             print(request.form['cod_owner'])
 
         else:
-            print('not valid')
+            print('not valid form: service')
     return render_template('Service.html', form=form)
+
 
 @app.route('/ref', methods=['GET', 'POST'])
 def ref():
@@ -50,26 +47,31 @@ def ref():
     if request.method == 'POST':
         if form.validate():
             print('logined:')
-            # print(request.form['cod_owner'])
 
         else:
-            print('not valid')
+            print('not valid form: reference')
     return render_template('Ref.html', form=form)
 
 
 @app.route('/mark', methods=['GET', 'POST'])
 def mark():
     form = MarkForm(request.form)
-    #opt_list = list('345982')
 
     if request.method == 'POST':
-        if form.validate():
-            print('logined:')
-            print(request.form)
-            #print(request.form['cod_owner'])
 
-        else:
-            print('not valid')
+        try:
+            if request.form.get('mark_name') is not None:
+                print(request.form['mark_name'])
+            else:
+                print('nope mark name')
+
+            if request.form.get('mark_list') is not None:
+                print(request.form['mark_list'])
+            else:
+                print('nope mark list')
+        except Exception as e:
+            print('error: ', e)
+
     return render_template('Mark.html', form=form)
 
 
@@ -82,7 +84,7 @@ def registration():
             print(request.form['name'], request.form['mid_name'], request.form['second_name'], request.form['adress'])
 
         else:
-            print('not valid')
+            print('not valid form: registration')
     return render_template("Registration.html", form=form)
 
 
@@ -96,7 +98,7 @@ def login():
             print(request.form['login'], request.form['password'])
 
         else:
-            print('not valid')
+            print('not valid form: login')
 
     return render_template('Login.html', form=form)
 
