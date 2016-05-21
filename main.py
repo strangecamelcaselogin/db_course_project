@@ -65,6 +65,7 @@ def mark():
     if request.method == 'POST':
         if form.validate():
             print('logined:')
+            print(request.form)
             #print(request.form['cod_owner'])
 
         else:

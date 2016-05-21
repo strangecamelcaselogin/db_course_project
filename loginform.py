@@ -1,10 +1,16 @@
 from wtforms import Form
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import DataRequired, Length, ValidationError
 
 
 Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm0123456789@')
 
+
+mappers = {
+    "A": '1',
+    "B": '2',
+    "C": '3'
+}
 
 class LoginForm(Form):
     def password_validator(self, field):
@@ -39,6 +45,8 @@ class ServiceForm(Form):
 
 
 class MarkForm(Form):
+
+    mark_list = SelectField ('Марка', choices=[(list(mappers.keys())[i],list(mappers.keys())[i]) for i in range(len(mappers.keys()))])
     #opt_list = SelectField ('Марка', choices=['1','3','7'])
     mark_name = StringField ('Название марки', [DataRequired(), Length(min=1, max=32)])
 
