@@ -52,7 +52,6 @@ class MarkForm(Form):
     mark_list = SelectField('Марка', choices=[(list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))])
 
 
-
 class RefForm(Form):
     mark_name = StringField('Марка', [DataRequired(), Length(min=1, max=32)])
     cod_box = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)])

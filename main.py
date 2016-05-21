@@ -58,6 +58,7 @@ def mark():
     form = MarkForm(request.form)
 
     if request.method == 'POST':
+
         try:
             if request.form.get('mark_name') is not None:
                 print(request.form['mark_name'])
@@ -70,6 +71,7 @@ def mark():
                 print('nope mark list')
         except Exception as e:
             print('error: ', e)
+
     return render_template('Mark.html', form=form)
 
 
