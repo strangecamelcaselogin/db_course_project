@@ -5,13 +5,12 @@
 	<h1>Главная</h1>
 	<div class="form-group" style="text-align: center" >
 		<form name="log" role="form" method="post">
-		 <div class="form-group">
-			 {{ render_field(form['login'], data_toggle='tooltip') }}
-		 </div>
-		 <div class="form-group">
-			 {{ render_field(form['password'], data_toggle='tooltip') }}
-		 </div>
-		 <button type="submit" class="btn btn-success">Войти</button>
+            {{ render_field(form.phone, data_toggle='tooltip') }}
+
+            {{ render_field(form['password'], data_toggle='tooltip') }}
+
+		    <button type="submit" class="btn btn-success">Войти</button>
+
 		</form>
 	<p><a href="registration" role="button" class="btn btn-default">Регистрация</a></p>
 	</div>
