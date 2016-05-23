@@ -1,22 +1,71 @@
+from functools import wraps
+
 from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, url_for, escape
 
 from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm
 
+import sqlite3
 
 app = Flask(__name__)
 
 
-# TODO LOGIN DECORATOR
-# TODO MORE SHIT!
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Сначало необходимо войти.')
+            return redirect('/login')
+
+    return wrapper
+
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if session['user_id'] == '00000000':
+            return f(*args, **kwargs)
+        else:
+            flash('Вы не админ')
+            return redirect('/index')
+
+    return wrapper
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    flash('Hey there! I am flash message!')
     return render_template('index.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            session['logged_in'] = True
+            session['user_id'] = form.phone.data
+
+            flash('Вошли как {}'.format(session['user_id']))
+            return redirect('/index')
+
+        else:
+            flash('Что-то пошло не так...')
+
+    return render_template('Login.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    flash('Вы вышли из системы.')
+
+    return redirect('/index')
 
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -26,32 +75,15 @@ def registration():
     if request.method == 'POST':
         if form.validate():
 
-            flash('registered')
+            flash('Вы зарегестрированы.')
             return redirect('/index')
-
-        else:
-            flash('form not valid')
 
     return render_template("Registration.html", form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm(request.form)
-
-    if request.method == 'POST':
-        if form.validate():
-            flash('logined:')
-            #print(request.form['login'], request.form['password'])
-            redirect('/index')
-
-        else:
-            flash('Что-то пошло не так...')
-
-    return render_template('Login.html', form=form)
-
-
 @app.route('/box', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def box():
     form = BoxForm(request.form)
     if request.method == 'POST':
@@ -65,6 +97,8 @@ def box():
 
 
 @app.route('/mark', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def mark():
     form = MarkForm(request.form)
 
@@ -87,6 +121,7 @@ def mark():
 
 
 @app.route('/service', methods=['GET', 'POST'])
+@login_required
 def service():
     form = ServiceForm(request.form)
 
@@ -100,6 +135,7 @@ def service():
 
 
 @app.route('/ref', methods=['GET', 'POST'])
+@login_required
 def ref():
     form = RefForm(request.form)
     if request.method == 'POST':
