@@ -1,63 +1,116 @@
+from functools import wraps
+
 from flask import Flask
-from flask import render_template, redirect, \
+from flask import render_template, redirect, flash, \
     request, session, url_for, escape
 
 from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm
 
+import sqlite3
 
 app = Flask(__name__)
 
-user = {}
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Сначала необходимо войти.')
+            return redirect('/login')
+
+    return wrapper
+
+
+def admin_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if session['user_id'] == '00000000':
+            return f(*args, **kwargs)
+        else:
+            flash('Вы не админ')
+            return redirect('/index')
+
+    return wrapper
+
 
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template('index.html')
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    flash(vars(request))
+    form = BoxForm(request.form)
+    return render_template('admin.html', form=form)
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            session['logged_in'] = True
+            session['user_id'] = form.phone.data
+
+            flash('Вошли как {}'.format(session['user_id']))
+            return redirect('/index')
+
+        else:
+            flash('Что-то пошло не так...')
+
+    return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    session.clear()
+    flash('Вы вышли из системы.')
+
+    return redirect('/index')
+
+
+@app.route('/registration', methods=['GET', 'POST'])
+def registration():
+    form = RegForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+
+            flash('Вы зарегестрированы.')
+            return redirect('/index')
+
+    return render_template("registration.html", form=form)
+
 
 @app.route('/box', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def box():
     form = BoxForm(request.form)
     if request.method == 'POST':
         if form.validate():
-            print('logined:')
-            print(request.form['cod_name'])
+            flash('logined:')
+            #print(request.form['cod_name'])
 
         else:
-            print('not valid form: box')
-    return render_template('Box.html', form=form)
-
-
-@app.route('/service', methods=['GET', 'POST'])
-def service():
-    form = ServiceForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            print('logined:')
-            print(request.form['cod_owner'])
-
-        else:
-            print('not valid form: service')
-    return render_template('Service.html', form=form)
-
-
-@app.route('/ref', methods=['GET', 'POST'])
-def ref():
-    form = RefForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            print('logined:')
-
-        else:
-            print('not valid form: reference')
-    return render_template('Ref.html', form=form)
+            flash('not valid form: box')
+    return render_template('box.html', form=form)
 
 
 @app.route('/mark', methods=['GET', 'POST'])
+@login_required
+@admin_required
 def mark():
     form = MarkForm(request.form)
 
     if request.method == 'POST':
+
         try:
             if request.form.get('mark_name') is not None:
                 print(request.form['mark_name'])
@@ -69,38 +122,39 @@ def mark():
             else:
                 print('nope mark list')
         except Exception as e:
-            print('error: ', e)
-    return render_template('Mark.html', form=form)
+            flash('error: ', e)
+
+    return render_template('mark.html', form=form)
 
 
-@app.route('/registration', methods=['GET', 'POST'])
-def registration():
-    form = RegForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            print('logined:')
-            print(request.form['name'], request.form['mid_name'], request.form['second_name'], request.form['adress'])
-
-        else:
-            print('not valid form: registration')
-    return render_template("Registration.html", form=form)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm(request.form)
+@app.route('/service', methods=['GET', 'POST'])
+@login_required
+def service():
+    form = ServiceForm(request.form)
 
     if request.method == 'POST':
         if form.validate():
-            print('logined:')
-            print(request.form['login'], request.form['password'])
+            print(request.form['cod_owner'])
 
         else:
-            print('not valid form: login')
+            flash('not valid form: service')
+    return render_template('service.html', form=form)
 
-    return render_template('Login.html', form=form)
+
+@app.route('/info', methods=['GET', 'POST'])
+@login_required
+def ref():
+    form = RefForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: reference')
+    return render_template('info.html', form=form)
 
 
 if __name__ == '__main__':
+    app.secret_key = 'wtf_dude_its_a_public_secret_key!!'  # !!!!!!!!!
     app.run(debug=True)
 

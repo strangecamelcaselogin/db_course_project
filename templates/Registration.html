@@ -5,23 +5,22 @@
 	<h1>Регистрация</h1>
 	<div class="form-group" style="text-align: center">
 		<form name="reg" role="form" class="form-horizontal" method="post">
-			<div class="form-group">
-				{{ render_field(form['second_name'], data_toggle='tooltip') }}
-			</div>
-			<div class="form-group">
-				{{ render_field(form['name'], data_toggle='tooltip') }}
-					<!--<input type="text" class="form-control" id="name"  placeholder="Введите имя">-->
-			</div>
-			<div class="form-group">
-				{{ render_field(form['mid_name'], data_toggle='tooltip') }}
-			</div>
-			<div class="form-group">
-				{{ render_field(form['adress'], data_toggle='tooltip') }}
-			</div>
-			<div class="form-group" >
-				{{ render_field(form['phone'], data_toggle='tooltip') }}
-			</div>
+            {{ render_field(form['phone'], data_toggle='tooltip') }}
+
+            {{ render_field(form['second_name'], data_toggle='tooltip') }}
+
+            {{ render_field(form['name'], data_toggle='tooltip') }}
+
+            {{ render_field(form['mid_name'], data_toggle='tooltip') }}
+
+            {{ render_field(form['adress'], data_toggle='tooltip') }}
+
+            {{ render_field(form['password'], data_toggle='tooltip') }}
+
+            {{ render_field(form['confirm_password'], data_toggle='tooltip') }}
+
 			<button type="submit" class="btn btn-success">Зарегестрировать</button>
+
 		</form>
 	</div>
 </div>

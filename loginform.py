@@ -1,6 +1,6 @@
 from wtforms import Form
 from wtforms import StringField, PasswordField, SelectField
-from wtforms.validators import DataRequired, Length, ValidationError
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 
 
 Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm0123456789@')
@@ -13,23 +13,28 @@ mappers = {
 }
 
 
-class LoginForm(Form):
-    def password_validator(self, field):
-        password = field.data
-        for symbol in password:
-            if symbol not in Symbols:
-                raise ValidationError('Недопустимый символ')
+def password_validator(self, field):
+    password = field.data
+    for symbol in password:
+        if symbol not in Symbols:
+            raise ValidationError('Недопустимый символ')
 
-    login = StringField('Логин', [DataRequired(), Length(min=4, max=32)])
+
+class LoginForm(Form):
+    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)], description="Желаемое число активных колонок (не меньше)")  # ???
     password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator])
 
 
 class RegForm(Form):
-    name = StringField('Имя', [DataRequired(), Length(min=1, max=32)])
-    mid_name = StringField('Отчество', [DataRequired(), Length(min=1, max=32)])
-    second_name = StringField('Фамилия', [DataRequired(), Length(min=1, max=32)])
+    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)])  # ???
+
+    name = StringField('Имя', [DataRequired(), Length(min=4, max=32)])
+    mid_name = StringField('Отчество', [DataRequired(), Length(min=4, max=32)])
+    second_name = StringField('Фамилия', [DataRequired(), Length(min=4, max=32)])
     adress = StringField('Адрес', [DataRequired(), Length(min=10, max=100)])
-    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)])
+
+    password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator])
+    confirm_password = PasswordField('Повторите пароль', [EqualTo('password', message='Пароль не совпадает')])
 
 
 class BoxForm(Form):
@@ -50,7 +55,6 @@ class ServiceForm(Form):
 class MarkForm(Form):
     mark_name = StringField('Название марки', []) # later - validators
     mark_list = SelectField('Марка', choices=[(list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))])
-
 
 
 class RefForm(Form):
