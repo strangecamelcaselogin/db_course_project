@@ -1,10 +1,6 @@
 ﻿body
-{ 
-<<<<<<< HEAD
+{
   background: #fffffd;
-=======
-  background: #fff;
->>>>>>> refs/remotes/origin/save_future
   margin: 0px!important;
   color: #030304;
 }
@@ -125,8 +121,8 @@ color: #000!important;
 
 /*управление элементами списка*/
 #ddmenu ul li { 
-  display: block; 
-  width: 100%; 
+  display: block;
+  width: 100%;
   font-size: 0.9em; 
   text-shadow: 1px 1px 0 #fff;
 }
