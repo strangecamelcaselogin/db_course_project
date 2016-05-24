@@ -1,14 +1,19 @@
+import os
 from functools import wraps
 
 from flask import Flask
 from flask import render_template, redirect, flash, \
-    request, session, url_for, escape
+    request, session, g, url_for
+
+import sqlite3 as lite
 
 from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm
 
-import sqlite3
 
 app = Flask(__name__)
+
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+DATABASE = os.path.join(PROJECT_ROOT, 'base.db')
 
 
 def login_required(f):
@@ -26,13 +31,16 @@ def login_required(f):
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if session['user_id'] == '00000000':
+        if session['phone'] == '00000000':
             return f(*args, **kwargs)
         else:
             flash('Вы не админ')
             return redirect('/index')
 
     return wrapper
+
+
+################################################
 
 
 @app.route('/')
@@ -47,11 +55,26 @@ def login():
 
     if request.method == 'POST':
         if form.validate():
-            session['logged_in'] = True
-            session['user_id'] = form.phone.data
 
-            flash('Вошли как {}'.format(session['user_id']))
-            return redirect('/index')
+            phone = form.phone.data
+            password = form.password.data
+
+            con = lite.connect(DATABASE)
+            with con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM Users WHERE Phone = :phone AND Password = :pass",
+                                {'phone': phone, 'pass': password})
+
+                data = cur.fetchall()
+
+                if len(data) != 0:
+                    session['logged_in'] = True
+                    session['phone'] = phone
+
+                    flash('Вошли как {}'.format(phone))
+                    return redirect('/index')
+
+            flash('Неверное имя пользователя или пароль.')
 
         else:
             flash('Что-то пошло не так...')
@@ -74,9 +97,21 @@ def registration():
 
     if request.method == 'POST':
         if form.validate():
+            phone = form.phone.data
+            password = form.password.data
 
-            flash('Вы зарегестрированы.')
-            return redirect('/index')
+            con = lite.connect(DATABASE)
+            with con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM Users WHERE Phone = :phone", {'phone':phone})
+
+                if len(cur.fetchall()) == 0:
+                    cur.execute("INSERT INTO Users VALUES (?,?)", (phone, password))
+                    flash('Вы зарегестрированы.')
+                    return redirect('/index')
+
+                else:
+                    flash('Такой пользователь уже существует.')
 
     return render_template("Registration.html", form=form)
 
@@ -145,6 +180,9 @@ def ref():
         else:
             flash('not valid form: reference')
     return render_template('Ref.html', form=form)
+
+
+##########################################################
 
 
 if __name__ == '__main__':
