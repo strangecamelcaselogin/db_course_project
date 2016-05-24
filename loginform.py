@@ -21,7 +21,7 @@ def password_validator(self, field):
 
 
 class LoginForm(Form):
-    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)])  # ???
+    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)], description="Желаемое число активных колонок (не меньше)")  # ???
     password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator])
 
 
