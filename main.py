@@ -17,7 +17,7 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
-            flash('Сначало необходимо войти.')
+            flash('Сначала необходимо войти.')
             return redirect('/login')
 
     return wrapper
@@ -40,6 +40,13 @@ def admin_required(f):
 def index():
     return render_template('index.html')
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    flash(vars(request))
+    form = BoxForm(request.form)
+    return render_template('admin.html', form=form)
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -56,7 +63,7 @@ def login():
         else:
             flash('Что-то пошло не так...')
 
-    return render_template('Login.html', form=form)
+    return render_template('login.html', form=form)
 
 
 @app.route('/logout')
@@ -78,7 +85,7 @@ def registration():
             flash('Вы зарегестрированы.')
             return redirect('/index')
 
-    return render_template("Registration.html", form=form)
+    return render_template("registration.html", form=form)
 
 
 @app.route('/box', methods=['GET', 'POST'])
@@ -93,7 +100,7 @@ def box():
 
         else:
             flash('not valid form: box')
-    return render_template('Box.html', form=form)
+    return render_template('box.html', form=form)
 
 
 @app.route('/mark', methods=['GET', 'POST'])
@@ -117,7 +124,7 @@ def mark():
         except Exception as e:
             flash('error: ', e)
 
-    return render_template('Mark.html', form=form)
+    return render_template('mark.html', form=form)
 
 
 @app.route('/service', methods=['GET', 'POST'])
@@ -131,10 +138,10 @@ def service():
 
         else:
             flash('not valid form: service')
-    return render_template('Service.html', form=form)
+    return render_template('service.html', form=form)
 
 
-@app.route('/ref', methods=['GET', 'POST'])
+@app.route('/info', methods=['GET', 'POST'])
 @login_required
 def ref():
     form = RefForm(request.form)
@@ -144,7 +151,7 @@ def ref():
 
         else:
             flash('not valid form: reference')
-    return render_template('Ref.html', form=form)
+    return render_template('info.html', form=form)
 
 
 if __name__ == '__main__':

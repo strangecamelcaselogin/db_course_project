@@ -8,12 +8,12 @@
 
             {{ render_field(form.phone, data_toggle='tooltip') }}
 
-            {{ render_field(form['password'], data_toggle='tooltip') }}
+            {{ render_field(form['password'], data_toggle='tooltip', title="подсказка") }}
 
 		    <button type="submit" class="btn btn-success">Войти</button>
 
 		</form>
-	<p><a href="registration" role="button" class="btn btn-default">Регистрация</a></p>
+	<p><a href="registration" role="button" class="btn btn-default" id="">Регистрация</a></p>
 	</div>
 </div>
 {% endblock %}
