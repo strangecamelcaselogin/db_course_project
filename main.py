@@ -1,19 +1,18 @@
-import os
+from hashlib import sha256
 from functools import wraps
-
-from flask import Flask
-from flask import render_template, redirect, flash, \
-    request, session, g, url_for
 
 import sqlite3 as lite
 
+from flask import Flask
+from flask import render_template, redirect, flash, \
+    request, session, abort, g, url_for
+
 from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm
+
+from settings import *
 
 
 app = Flask(__name__)
-
-PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-DATABASE = os.path.join(PROJECT_ROOT, 'base.db')
 
 
 def login_required(f):
@@ -22,7 +21,7 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
-            flash('Сначало необходимо войти.')
+            flash('Сначала необходимо войти.')
             return redirect('/login')
 
     return wrapper
@@ -31,22 +30,77 @@ def login_required(f):
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if session['phone'] == '00000000':
+        if 'is_admin' in session:
             return f(*args, **kwargs)
         else:
-            flash('Вы не админ')
-            return redirect('/index')
+            abort(404)
 
     return wrapper
 
 
 ################################################
 
-
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', x=42)
+
+
+@app.route('/services', methods=['GET', 'POST'])
+@login_required
+def service():
+    form = ServiceForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: service')
+    return render_template('services.html', form=form)
+
+
+@app.route('/info', methods=['GET', 'POST'])
+@login_required
+def ref():
+    form = RefForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: reference')
+    return render_template('info.html', form=form)
+
+
+@app.route('/admin_info', methods=['GET', 'POST'])
+@admin_required
+def admin_info():
+    return render_template('admin_info.html')
+
+
+@app.route('/boxes', methods=['GET', 'POST'])
+@admin_required
+def box():
+    form = BoxForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: box')
+    return render_template('boxes.html', form=form)
+
+
+@app.route('/brands', methods=['GET', 'POST'])
+@admin_required
+def mark():
+    form = MarkForm(request.form)
+
+    if request.method == 'POST':
+        pass
+
+    return render_template('brands.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -57,21 +111,23 @@ def login():
         if form.validate():
 
             phone = form.phone.data
-            password = form.password.data
+            hashed_password = sha256(form.password.data.encode('utf-8')).hexdigest()
 
             con = lite.connect(DATABASE)
             with con:
                 cur = con.cursor()
-                cur.execute("SELECT * FROM Users WHERE Phone = :phone AND Password = :pass",
-                                {'phone': phone, 'pass': password})
+                cur.execute('''SELECT  * FROM Clients WHERE Phone = :phone AND Password = :password''',
+                            {'phone': phone, 'password': hashed_password})
 
                 data = cur.fetchall()
 
-                if len(data) != 0:
+                if len(data) == 1:
                     session['logged_in'] = True
                     session['phone'] = phone
+                    if phone == ADMIN:
+                        session['is_admin'] = True
 
-                    flash('Вошли как {}'.format(phone))
+                    flash('Вы вошли как {}'.format(phone))
                     return redirect('/index')
 
             flash('Неверное имя пользователя или пароль.')
@@ -79,7 +135,47 @@ def login():
         else:
             flash('Что-то пошло не так...')
 
-    return render_template('Login.html', form=form)
+    return render_template('login.html', form=form)
+
+
+@app.route('/registration', methods=['GET', 'POST'])
+def registration():
+    form = RegForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            phone = form.phone.data
+            hashed_password = sha256(form.password.data.encode('utf-8')).hexdigest()
+
+            f_name = form.name.data
+            s_name = form.second_name.data
+            m_name = form.mid_name.data
+            address = form.address.data
+
+            con = lite.connect(DATABASE)
+            with con:
+                cur = con.cursor()
+
+                cur.execute("SELECT * FROM Clients WHERE Phone = :phone", {'phone': phone})
+
+                if len(cur.fetchall()) == 0:
+
+                    cur.execute('''INSERT INTO Clients (Second_Name, First_Name, Middle_Name, Address, Phone, Password)
+                                VALUES (:s_name, :f_name, :m_name, :address, :phone, :password)''',
+                                {'s_name': s_name,
+                                 'f_name': f_name,
+                                 'm_name': m_name,
+                                 'address': address,
+                                 'phone': phone,
+                                 'password': hashed_password})
+
+                    flash('Вы зарегестрированы.')
+                    return redirect('/index')
+
+                else:
+                    flash('Такой пользователь уже существует.')
+
+    return render_template("registration.html", form=form)
 
 
 @app.route('/logout')
@@ -91,98 +187,7 @@ def logout():
     return redirect('/index')
 
 
-@app.route('/registration', methods=['GET', 'POST'])
-def registration():
-    form = RegForm(request.form)
-
-    if request.method == 'POST':
-        if form.validate():
-            phone = form.phone.data
-            password = form.password.data
-
-            con = lite.connect(DATABASE)
-            with con:
-                cur = con.cursor()
-                cur.execute("SELECT * FROM Users WHERE Phone = :phone", {'phone':phone})
-
-                if len(cur.fetchall()) == 0:
-                    cur.execute("INSERT INTO Users VALUES (?,?)", (phone, password))
-                    flash('Вы зарегестрированы.')
-                    return redirect('/index')
-
-                else:
-                    flash('Такой пользователь уже существует.')
-
-    return render_template("Registration.html", form=form)
-
-
-@app.route('/box', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def box():
-    form = BoxForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            flash('logined:')
-            #print(request.form['cod_name'])
-
-        else:
-            flash('not valid form: box')
-    return render_template('Box.html', form=form)
-
-
-@app.route('/mark', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def mark():
-    form = MarkForm(request.form)
-
-    if request.method == 'POST':
-
-        try:
-            if request.form.get('mark_name') is not None:
-                print(request.form['mark_name'])
-            else:
-                print('nope mark name')
-
-            if request.form.get('mark_list') is not None:
-                print(request.form['mark_list'])
-            else:
-                print('nope mark list')
-        except Exception as e:
-            flash('error: ', e)
-
-    return render_template('Mark.html', form=form)
-
-
-@app.route('/service', methods=['GET', 'POST'])
-@login_required
-def service():
-    form = ServiceForm(request.form)
-
-    if request.method == 'POST':
-        if form.validate():
-            print(request.form['cod_owner'])
-
-        else:
-            flash('not valid form: service')
-    return render_template('Service.html', form=form)
-
-
-@app.route('/ref', methods=['GET', 'POST'])
-@login_required
-def ref():
-    form = RefForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            pass
-
-        else:
-            flash('not valid form: reference')
-    return render_template('Ref.html', form=form)
-
-
-##########################################################
+################################################
 
 
 if __name__ == '__main__':

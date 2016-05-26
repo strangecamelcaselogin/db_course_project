@@ -3,12 +3,9 @@
     <dt>{{ field.label }}
     <dd>{{ field(**kwargs)|safe }}
         {% if field.description %}
+
             <script type="text/javascript">
-                $('input[name={{field.name}}]').tooltip({
-                    placement: "right",
-                    trigger: "focus",
-                    title: "{{field.description}}"
-                });
+                $('#{{field.name}}').tooltip({title: '{{field.description}}'});
             </script>
         {% endif %}
 

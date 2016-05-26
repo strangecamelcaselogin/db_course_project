@@ -9,13 +9,21 @@
     <title>Car</title>
 
     <link href="static/bootstrap.min.css" rel="stylesheet">
+	<link href="static/style.css" rel="stylesheet">
     <link href="http://getbootstrap.com/dist/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/theme/theme.css" rel="stylesheet">
     <link rel="icon" type="image/vnd.microsoft.icon" href="static/favicon.ico"/>
 
+		<style type="text/css">
+	   .Current
+	   {
+		    border-bottom: 2px solid white;
+	   }
+	    </style>
+
 </head>
 
-<body>
+<body role="document">
 
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -30,16 +38,21 @@
 
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="index" >Главная</a></li>
-                    <li><a href="box">Боксы</a>
-                    <li><a href="mark">Марки</a></li>
-                    <li><a href="service">Услуги</a></li>
-                    <li><a href="ref">Справки</a></li>
+                    <li><a href="index" >Главная</a></li>
+                    <li><a href="services">Услуги</a></li>
+                    <li><a href="info">Информация</a></li>
 
-                    {% if 'logged_in' not in session %}
-                        <li><a href="login">Вход</a></li>
-                    {% else %}
+                    {% if ('logged_in' in session) and ('is_admin' in session) %}
+                        <li><a href="admin_info">Администрирование</a> </li>
+                        <li><a href="boxes">Боксы</a>
+                        <li><a href="brands">Марки</a></li>
+
+                    {% endif %}
+
+                    {% if 'logged_in' in session %}
                         <li><a href="logout">Выход</a></li>
+                    {% else %}
+                        <li><a href="login">Вход</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -70,8 +83,21 @@
         </div>
 	</div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>-->
+
+    <script src="static/jquery-2.1.4.min.js"></script>
+    <script src="static/bootstrap.min.js"></script>
+
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			var url = document.location.toString();
+			$("a").filter(function () {
+				return url.indexOf(this.href) != -1;
+			}).addClass("Current");
+		});
+	</script>
 
 </body>
 </html>

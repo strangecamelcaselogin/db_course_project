@@ -4,3 +4,4 @@
 __pycache__/loginform.cpython-35.pyc
 .idea/web_db.iml
 .idea/vcs.xml
+*.pyc
