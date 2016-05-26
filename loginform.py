@@ -21,17 +21,17 @@ def password_validator(self, field):
 
 
 class LoginForm(Form):
-    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)], description="Желаемое число активных колонок (не меньше)")  # ???
+    phone = StringField('Телефон', [DataRequired(), Length(min=8, max=11)], description="Желаемое число активных колонок (не меньше)")  # ???
     password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator])
 
 
 class RegForm(Form):
-    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)])  # ???
+    phone = StringField('Телефон', [DataRequired(), Length(min=8, max=11)])  # ???
 
-    name = StringField('Имя', [DataRequired(), Length(min=4, max=32)])
-    mid_name = StringField('Отчество', [DataRequired(), Length(min=4, max=32)])
-    second_name = StringField('Фамилия', [DataRequired(), Length(min=4, max=32)])
-    adress = StringField('Адрес', [DataRequired(), Length(min=10, max=100)])
+    name = StringField('Имя', [DataRequired(), Length(min=2, max=32)])
+    mid_name = StringField('Отчество', [DataRequired(), Length(min=2, max=32)])
+    second_name = StringField('Фамилия', [DataRequired(), Length(min=2, max=32)])
+    address = StringField('Адрес', [DataRequired(), Length(min=10, max=100)])
 
     password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator])
     confirm_password = PasswordField('Повторите пароль', [EqualTo('password', message='Пароль не совпадает')])
