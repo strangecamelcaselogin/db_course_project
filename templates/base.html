@@ -39,20 +39,15 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="index" >Главная</a></li>
-                    <li><a href="services">Услуги</a></li>
-                    <li><a href="info">Информация</a></li>
+                    <li><a href="box">Боксы</a>
+                    <li><a href="mark">Марки</a></li>
+                    <li><a href="service">Услуги</a></li>
+                    <li><a href="info">Справки</a></li>
 
-                    {% if ('logged_in' in session) and ('is_admin' in session) %}
-                        <li><a href="admin_info">Администрирование</a> </li>
-                        <li><a href="boxes">Боксы</a>
-                        <li><a href="brands">Марки</a></li>
-
-                    {% endif %}
-
-                    {% if 'logged_in' in session %}
-                        <li><a href="logout">Выход</a></li>
-                    {% else %}
+                    {% if 'logged_in' not in session %}
                         <li><a href="login">Вход</a></li>
+                    {% else %}
+                        <li><a href="logout">Выход</a></li>
                     {% endif %}
                 </ul>
             </div>
