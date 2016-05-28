@@ -5,35 +5,35 @@
 	<h2>Прием в эксплуатацию нового бокса</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="acceptance" role="form" method="post">
-		 <div class="form-group">
+
 			{{ render_field(form['cod_box_open'], data_toggle='tooltip') }}
-		 </div>
-		 <div class="form-group">
+
 			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
-		 </div>
-		 <div class="form-group">
+
 			{{ render_field(form['prise'], data_toggle='tooltip') }}
-		 </div>
-		 <div class="form-group">
-			<label for="flag">Состояние</label>
-			<select class="form-control" id="flag">
-				<option>Свободен</option>
-				<option>Закрыт</option>
-				<option>Занят</option>
-			</select>
-		 </div>
-		 <button type="submit" class="btn btn-success">Принять</button>
+
+             <div class="form-group">
+                <label for="flag">Состояние</label>
+                <select class="form-control" id="flag">
+                    <option>Свободен</option>
+                    <option>Закрыт</option>
+                    <option>Занят</option>
+                </select>
+             </div>
+
+		    <button type="submit" class="btn btn-success">Принять</button>
 		</form>
 	</div>
 	<hr>
 	<h2>Закрытие бокса</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="close" role="form" method="post">
-		 <div class="form-group">
 			{{ render_field(form['cod_box_close'], data_toggle='tooltip') }}
-		 </div>
-		 <button type="submit" class="btn btn-success">Закрыть</button>
+
+		    <button type="submit" class="btn btn-success">Закрыть</button>
+
 		</form>
 	</div>
 </div>
 {% endblock %}
+

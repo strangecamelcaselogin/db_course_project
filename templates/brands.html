@@ -5,21 +5,21 @@
 	<h2>Добавить марку в перечень</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="mark_add" role="form" id="mark" method="post">
-		 <div class="form-group">
+
 			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
-		 </div>
-		 <button type="submit" class="btn btn-success">Добавить</button>
+
+		    <button type="submit" class="btn btn-success">Добавить</button>
 		</form>
 	</div>
 	<hr>
 	<h2>Удалить марку</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="mark_del" role="form" method="post">
-		 <div class="form-group">
+
 		 <!-- Тут будет список -->
 			{{ render_field(form['mark_list'], data_toggle='tooltip') }}
-		 </div>
-		 <button type="submit" class="btn btn-success">Удалить</button>
+
+		    <button type="submit" class="btn btn-success">Удалить</button>
 		</form>
 	</div>
 </div>
