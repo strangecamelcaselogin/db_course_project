@@ -6,20 +6,20 @@
 	<div class="form-group" style="text-align: center">
 		<form name="acceptance" role="form" method="post">
 
-			{{ render_field(form['cod_box_open'], data_toggle='tooltip') }}
-
 			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
 
 			{{ render_field(form['prise'], data_toggle='tooltip') }}
 
-             <div class="form-group">
+			{{ render_field(form['choose_list'], data_toggle='tooltip') }}
+
+             <!--<div class="form-group">
                 <label for="flag">Состояние</label>
                 <select class="form-control" id="flag">
                     <option>Свободен</option>
                     <option>Закрыт</option>
                     <option>Занят</option>
                 </select>
-             </div>
+             </div> -->
 
 		    <button type="submit" class="btn btn-success">Принять</button>
 		</form>

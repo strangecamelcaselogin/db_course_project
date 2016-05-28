@@ -1,14 +1,60 @@
-﻿body
+﻿html
 {
-  background: #fffffd;
+min-height: 100%;
+position: relative;
+}
+body
+{
+  background-image: url('backmenu.jpg');
   margin: 0px!important;
   color: #030304;
+  height: 100%;
+  padding-bottom: 150px!important;
+  padding-top: 0px!important;
 }
-.navbar-nav>.active>a
+.navbar-nav li
 {
-color: #aabbcc;
+    float: none;
+    border-left: 1px solid #9f9f9f;
 }
-.Current
-	   {
-		   color: #000;
-	   }
+.navbar-nav li:first-child
+{
+    border-left: 0px;
+}
+.navbar-nav li a
+{
+    line-height: 50px;
+    font-size: 23px;
+    color: rgb(255, 255, 253)!important;
+}
+#reg
+{
+ margin-top: 10px;
+}
+.btn-success
+{
+ background: linear-gradient(to bottom,#7e879c 0,#363748 100%)!important;
+ border-color: #363748!important;
+}
+.btn-success:hover
+{
+background-color: #6a435a!important;
+}
+p
+{
+margin: 0 0 0 0!important;
+}
+#wrap {
+  min-height: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.footer {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  height: 150px;
+  clear:both;
+  padding-top:20px;
+  padding-bottom: 0px;
+}
