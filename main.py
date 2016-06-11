@@ -7,7 +7,7 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm
+from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm, AdminForm
 
 from settings import *
 
@@ -77,7 +77,33 @@ def ref():
 @app.route('/admin_info', methods=['GET', 'POST'])
 @admin_required
 def admin_info():
-    return render_template('admin_info.html')
+    form = RefForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: reference')
+    return render_template('admin_info.html', form=form)
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+@admin_required
+def admin():
+    form = AdminForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: box')
+    return render_template('admin.html', form=form)
+
+
+@app.route('/personal', methods=['GET', 'POST'])
+@admin_required
+def personal_area():
+    return render_template('personal.html')
 
 
 @app.route('/boxes', methods=['GET', 'POST'])
