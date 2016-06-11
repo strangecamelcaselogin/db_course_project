@@ -38,7 +38,7 @@ class RegForm(Form):
                              description="Минимальная длина - 8 символов. Максимальная длина - 32 символа")
     confirm_password = PasswordField('Повторите пароль', [EqualTo('password', message='Пароль не совпадает')])
 
-
+'''
 class BoxForm(Form):
     cod_box_close = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)],
                                 description="Бокс с указанным номером будет закрыт")
@@ -46,9 +46,9 @@ class BoxForm(Form):
     choose_list = SelectField('Состояние', choices=[('', 'Свободен'), ('', 'Занят'), ('', 'Закрыт')])
     mark_name = StringField('Марка', [DataRequired(), Length(min=1, max=32)])
     prise = StringField('Цена', [DataRequired(), Length(min=1, max=32)], description="Не ниже пятисот ...")
+'''
 
-
-class ServiceForm(Form):
+class RentForm(Form):
     mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')])  # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
     box_list = SelectField('Бокс', choices=[('', '1'), ('', '2'), ('', '3')])
 
@@ -57,8 +57,13 @@ class ServiceForm(Form):
     number_auto = StringField('Номер авто', [DataRequired(), Length(min=1, max=32)])
     cod_receipt = StringField('Номер квитанции', [DataRequired(), Length(min=1, max=32)])
 
+'''
+class MarkForm(Form):
+    mark_name = StringField('Название марки', []) # later - validators
+    #mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')]) # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
+'''
 
-class AdminForm(Form):
+class AdminManage(Form):
     cod_box_close = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)],
                                 description="Бокс с указанным номером будет закрыт")
     choose_list = SelectField('Состояние', choices=[('', 'Свободен'), ('', 'Занят'), ('', 'Закрыт')])
@@ -69,12 +74,7 @@ class AdminForm(Form):
     # mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')]) # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
 
 
-class MarkForm(Form):
-    mark_name = StringField('Название марки', []) # later - validators
-    #mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')]) # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
-
-
-class RefForm(Form):
+class AdminInfo(Form):
     mark_name = StringField('Марка', [DataRequired(), Length(min=1, max=32)])
     cod_box = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)])
     date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)])

@@ -7,7 +7,7 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from forms import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm, AdminForm
+from forms import LoginForm, RegForm, RentForm, AdminInfo, AdminManage #BoxForm, MarkForm
 
 from settings import *
 
@@ -51,14 +51,14 @@ def index():
 @app.route('/rent', methods=['GET', 'POST'])
 @login_required
 def service():
-    form = ServiceForm(request.form)
+    form = RentForm(request.form)
 
     if request.method == 'POST':
         if form.validate():
             pass
 
         else:
-            flash('not valid form: service')
+            flash('not valid form: RentForm')
     return render_template('rent.html', form=form)
 
 
@@ -85,8 +85,9 @@ def ref():
 @app.route('/admin_info', methods=['GET', 'POST'])
 @admin_required
 def admin_info():
-    form = RefForm(request.form)
+    form = AdminInfo(request.form)
     if request.method == 'POST':
+        print(request.form) # !!!!
         if form.validate():
             pass
 
@@ -98,7 +99,7 @@ def admin_info():
 @app.route('/admin_manage', methods=['GET', 'POST'])
 @admin_required
 def admin():
-    form = AdminForm(request.form)
+    form = AdminManage(request.form)
     if request.method == 'POST':
         if form.validate():
             pass
