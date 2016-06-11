@@ -57,6 +57,16 @@ class ServiceForm(Form):
     number_auto = StringField('Номер авто', [DataRequired(), Length(min=1, max=32)])
     cod_receipt = StringField('Номер квитанции', [DataRequired(), Length(min=1, max=32)])
 
+class AdminForm(Form):
+    cod_box_close = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)],
+                                description="Бокс с указанным номером будет закрыт")
+    choose_list = SelectField('Состояние', choices=[('', 'Свободен'), ('', 'Занят'), ('', 'Закрыт')])
+    mark_name = StringField('Марка', [DataRequired(), Length(min=1, max=32)])
+    prise = StringField('Цена', [DataRequired(), Length(min=1, max=32)], description="Не ниже пятисот ...")
+
+    brand_name = StringField('Название марки', [])  # later - validators
+    # mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')]) # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
+
 
 class MarkForm(Form):
     mark_name = StringField('Название марки', []) # later - validators
