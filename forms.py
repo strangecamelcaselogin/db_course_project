@@ -57,6 +57,7 @@ class ServiceForm(Form):
     number_auto = StringField('Номер авто', [DataRequired(), Length(min=1, max=32)])
     cod_receipt = StringField('Номер квитанции', [DataRequired(), Length(min=1, max=32)])
 
+
 class AdminForm(Form):
     cod_box_close = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)],
                                 description="Бокс с указанным номером будет закрыт")

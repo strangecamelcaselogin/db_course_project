@@ -47,13 +47,13 @@
 
                     {% if ('logged_in' in session) and ('is_admin' in session) %}
                         <li><a href="admin_info">Справки</a> </li>
-                        <li><a href="admin">Управление</a> </li>
+                        <li><a href="admin_manage">Управление</a> </li>
 
                         <!--<li><a href="boxes">Боксы</a>
                         <li><a href="brands">Марки</a></li>-->
                     {%else%}
                         {% if ('logged_in' in session) and not('is_admin' in session) %}
-                            <li><a href="services">Аренда бокса</a></li>
+                            <li><a href="rent">Аренда бокса</a></li>
                             <li><a href="personal">Личный кабинет</a></li>
                         {% endif %}
                     {% endif %}
