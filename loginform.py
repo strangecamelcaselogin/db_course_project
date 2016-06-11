@@ -32,7 +32,7 @@ class RegForm(Form):
     name = StringField('Имя', [DataRequired(), Length(min=4, max=32)])
     mid_name = StringField('Отчество', [DataRequired(), Length(min=4, max=32)])
     second_name = StringField('Фамилия', [DataRequired(), Length(min=4, max=32)])
-    adress = StringField('Адрес', [DataRequired(), Length(min=10, max=100)])
+    address = StringField('Адрес', [DataRequired(), Length(min=10, max=100)])
 
     password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator],
                              description="Минимальная длина - 8 символов. Максимальная длина - 32 символа")
@@ -49,6 +49,8 @@ class BoxForm(Form):
 
 
 class ServiceForm(Form):
+    mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')])  # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
+    box_list = SelectField('Бокс', choices=[('', '1'), ('', '2'), ('', '3')])
 
     date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)])
     date_start = StringField('Дата начала аренды', [DataRequired(), Length(min=1, max=32)])
@@ -58,7 +60,7 @@ class ServiceForm(Form):
 
 class MarkForm(Form):
     mark_name = StringField('Название марки', []) # later - validators
-    mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')]) # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
+    #mark_list = SelectField('Марка', choices=[('', 'A'), ('', 'B'), ('', 'C')]) # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
 
 
 class RefForm(Form):

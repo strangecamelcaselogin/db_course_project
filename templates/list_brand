@@ -1,0 +1,26 @@
+{% for post in posts %}
+	<button class="btn btn-primary" data-toggle="modal" data-target="#{{post.brand}}">
+        {{post.brand}}
+      </button>
+
+<!-- Modal -->
+
+	<div class="modal fade" id="{{post.brand}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">Закрыть</button>
+			<h4 class="modal-title" id="myModalLabel">{{post.brand}}</h4>
+		  </div>
+		  <div class="modal-body">
+			{{post.box}}
+		  </div>
+		</div>
+	  </div>
+	</div>
+{% endfor %}
+<script>
+	$('#myModal').modal(options)
+</script>
+
+

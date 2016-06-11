@@ -43,7 +43,8 @@ def admin_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', x=42)
+    posts = [{'brand':'Mercedes', 'box': '1' }, {'brand':'Renault', 'box': '3'}]
+    return render_template('index.html', x=42, posts = posts)
 
 
 @app.route('/services', methods=['GET', 'POST'])
@@ -98,7 +99,27 @@ def mark():
     form = MarkForm(request.form)
 
     if request.method == 'POST':
-        pass
+        if form.validate():
+            mark = form.mark_name.data
+
+            con = lite.connect(DATABASE)
+            with con:
+
+                cur = con.cursor()
+
+                cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark", {'mark': mark})
+
+                if len(cur.fetchall()) == 0:
+
+                    cur.execute('''INSERT INTO Car_Brands (Brand)
+                                VALUES (:mark)''',
+                                {'mark': mark})
+
+                    flash('Марка добавлена.')
+                    #return redirect('/index')
+
+                else:
+                    flash('Такая марка уже существует')
 
     return render_template('brands.html', form=form)
 

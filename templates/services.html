@@ -5,19 +5,9 @@
 	<h2>Предоставить бокс клиенту</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="box_owner" role="form" method="post">
-             <div class="form-group">
-             <!-- Тут будет список -->
-                <label for="list_mark">Марка</label>
-                <select class="form-control" id="list_mark">
-                </select>
-             </div>
+             {{ render_field(form['mark_list'], data_toggle='tooltip') }}
 
-             <div class="form-group">
-             <!-- Тут будет список -->
-                <label for="list_box">Номер бокса</label>
-                <select class="form-control" id="list_box">
-                </select>
-             </div>
+             {{ render_field(form['box_list'], data_toggle='tooltip') }}
 
              {{ render_field(form['date_start'], data_toggle='tooltip') }}
 
