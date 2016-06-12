@@ -12,19 +12,10 @@ body
   padding-bottom: 150px!important;
   padding-top: 0px!important;
 }
-.navbar-nav li
-{
-    float: none;
-    border-left: 1px solid #9f9f9f;
-}
-.navbar-nav li:first-child
-{
-    border-left: 0px;
-}
 .navbar-nav li a
 {
-    line-height: 50px;
-    font-size: 23px;
+    line-height: 45px;
+    font-size: 21px;
     color: rgb(255, 255, 253)!important;
 }
 #reg
@@ -57,4 +48,20 @@ margin: 0 0 0 0!important;
   clear:both;
   padding-top:20px;
   padding-bottom: 0px;
+}
+hr
+{
+height: 1px;
+background-color: #b5b5b5;
+}
+#hr_between
+{
+margin-top: 25px;
+margin-bottom: 30px;
+height: 2px;
+background-color: #959595;
+}
+h2
+{
+ font-size: 23px;
 }
