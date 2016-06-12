@@ -1,13 +1,13 @@
-from hashlib import sha256
 from functools import wraps
-
-import sqlite3 as lite
 
 from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from forms import LoginForm, RegForm, RentForm, AdminInfo, AdminManage #BoxForm, MarkForm
+from sql_core import login, register, add_mark
+
+from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
+    NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm
 
 from settings import *
 
@@ -41,191 +41,148 @@ def admin_required(f):
 ################################################
 
 
+# ITS INDEX PAGE (CAP)
 @app.route('/')
 @app.route('/index')
 def index():
-    posts = [{'brand':'Mercedes', 'box': '1' }, {'brand':'Renault', 'box': '3'}]
+    posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
+
     return render_template('index.html', x=42, posts=posts)
 
 
+# RENT BOX
 @app.route('/rent', methods=['GET', 'POST'])
 @login_required
-def service():
-    form = RentForm(request.form)
+def rent():
+    forms = dict()
+    forms['RentForm'] = RentForm()
+    forms['RefuseForm'] = RefuseForm()
 
     if request.method == 'POST':
-        if form.validate():
-            pass
+        if 'rent' in request.form:
+            forms['RentForm'] = RentForm(request.form)
+            form = forms['RentForm']
+            if form.validate():
+                pass
+                forms['RentForm'] = RentForm()
 
-        else:
-            flash('not valid form: RentForm')
-    return render_template('rent.html', form=form)
+        elif 'refuse' in request.form:
+            forms['RefuseForm'] = RefuseForm(request.form)
+            form = forms['RefuseForm']
+            if form.validate():
+                pass
+                forms['RefuseForm'] = RefuseForm()
+
+    return render_template('rent.html', f=forms)
 
 
+# PERSONAL
 @app.route('/personal', methods=['GET', 'POST'])
 @login_required
 def personal_area():
     return render_template('personal.html')
 
 
-'''
-@app.route('/info', methods=['GET', 'POST'])
-@login_required
-def ref():
-    form = RefForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            pass
-
-        else:
-            flash('not valid form: reference')
-    return render_template('info.html', form=form)
-'''
-
+# ADMIN STUFF
 @app.route('/admin_info', methods=['GET', 'POST'])
 @admin_required
 def admin_info():
-    form = AdminInfo(request.form)
-    if request.method == 'POST':
-        print(request.form) # !!!!
-        if form.validate():
-            pass
+    #form = AdminInfo(request.form)
+    #if request.method == 'POST':
+    #    if form.validate():
+    #        pass
+    #    else:
+    #        flash('not valid form: reference')
 
-        else:
-            flash('not valid form: reference')
-    return render_template('admin_info.html', form=form)
+    information = dict()
+
+    return render_template('admin_info.html', inf=information)
 
 
 @app.route('/admin_manage', methods=['GET', 'POST'])
 @admin_required
-def admin():
-    form = AdminManage(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            pass
+def admin_manage():
 
-        else:
-            flash('not valid form: box')
-    return render_template('admin_manage.html', form=form)
-
-
-'''
-@app.route('/boxes', methods=['GET', 'POST'])
-@admin_required
-def box():
-    form = BoxForm(request.form)
-    if request.method == 'POST':
-        if form.validate():
-            pass
-
-        else:
-            flash('not valid form: box')
-    return render_template('boxes.html', form=form)
-
-
-@app.route('/brands', methods=['GET', 'POST'])
-@admin_required
-def mark():
-    form = MarkForm(request.form)
+    forms = dict()
+    forms['NewBoxForm'] = NewBoxForm()
+    forms['CloseBoxForm'] = CloseBoxForm()
+    forms['NewMarkForm'] = NewMarkForm()
+    forms['DeleteMarkForm'] = DeleteMarkForm()
 
     if request.method == 'POST':
-        if form.validate():
-            mark = form.mark_name.data
+        if 'new_box' in request.form:
+            forms['NewBoxForm'] = NewBoxForm(request.form)
+            print('nb')
+            f = forms['NewBoxForm']
+            if f.validate():
+                print('valid')
+                forms['NewBoxForm'] = NewBoxForm()
 
-            con = lite.connect(DATABASE)
-            with con:
+        elif 'close_box' in request.form:
+            forms['CloseBoxForm'] = CloseBoxForm(request.form)
+            print('cb')
+            f = forms['CloseBoxForm']
+            if f.validate():
+                print('valid')
+                forms['CloseBoxForm'] = CloseBoxForm()
 
-                cur = con.cursor()
-
-                cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark", {'mark': mark})
-
-                if len(cur.fetchall()) == 0:
-'''
-                  #  cur.execute('''INSERT INTO Car_Brands (Brand)
-                  #              VALUES (:mark)''',
-                  #              {'mark': mark})
-'''
+        elif 'new_mark' in request.form:
+            forms['NewMarkForm'] = NewMarkForm(request.form)
+            print('nm')
+            f = forms['NewMarkForm']
+            if f.validate():
+                if add_mark(f.nm_mark_name.data):  # DONE
                     flash('Марка добавлена.')
-                    #return redirect('/index')
 
                 else:
                     flash('Такая марка уже существует')
 
-    return render_template('brands.html', form=form)
-'''
+            forms['NewMarkForm'] = NewMarkForm()
+
+        elif 'del_mark' in request.form:
+            forms['DeleteMarkForm'] = DeleteMarkForm(request.form)
+            print('dm')
+            f = forms['DeleteMarkForm']
+            if f.validate():
+                print('valid')
+                forms['DeleteMarkForm'] = DeleteMarkForm()
+
+        else:
+            flash('что то совсем странное')
+
+    return render_template('admin_manage.html', f=forms)
 
 
+# LOGIN AND REGISTER
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login_():
     form = LoginForm(request.form)
 
     if request.method == 'POST':
         if form.validate():
 
-            phone = form.phone.data
-            hashed_password = sha256(form.password.data.encode('utf-8')).hexdigest()
+            if login(form):
+                flash('Вы вошли как {}'.format(form.phone.data))
+                return redirect('/index')
 
-            con = lite.connect(DATABASE)
-            with con:
-                cur = con.cursor()
-                cur.execute('''SELECT  * FROM Clients WHERE Phone = :phone AND Password = :password''',
-                            {'phone': phone, 'password': hashed_password})
-
-                data = cur.fetchall()
-
-                if len(data) == 1:
-                    session['logged_in'] = True
-                    session['phone'] = phone
-                    if phone == ADMIN:
-                        session['is_admin'] = True
-
-                    flash('Вы вошли как {}'.format(phone))
-                    return redirect('/index')
-
-            flash('Неверное имя пользователя или пароль.')
-
-        else:
-            flash('Что-то пошло не так...')
+            else:
+                flash('Неверное имя пользователя или пароль.')
 
     return render_template('login.html', form=form)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
-    form = RegForm(request.form)
+    form = RegistrationForm(request.form)
 
     if request.method == 'POST':
         if form.validate():
-            phone = form.phone.data
-            hashed_password = sha256(form.password.data.encode('utf-8')).hexdigest()
+            if register(form):
+                flash('Вы зарегестрированы.')
+                return redirect('/index')
 
-            f_name = form.name.data
-            s_name = form.second_name.data
-            m_name = form.mid_name.data
-            address = form.address.data
-
-            con = lite.connect(DATABASE)
-            with con:
-                cur = con.cursor()
-
-                cur.execute("SELECT * FROM Clients WHERE Phone = :phone", {'phone': phone})
-
-                if len(cur.fetchall()) == 0:
-
-                    cur.execute('''INSERT INTO Clients (Second_Name, First_Name, Middle_Name, Address, Phone, Password)
-                                VALUES (:s_name, :f_name, :m_name, :address, :phone, :password)''',
-                                {'s_name': s_name,
-                                 'f_name': f_name,
-                                 'm_name': m_name,
-                                 'address': address,
-                                 'phone': phone,
-                                 'password': hashed_password})
-
-                    flash('Вы зарегестрированы.')
-                    return redirect('/index')
-
-                else:
-                    flash('Такой пользователь уже существует.')
+            else:
+                flash('Такой пользователь уже существует.')
 
     return render_template("registration.html", form=form)
 
