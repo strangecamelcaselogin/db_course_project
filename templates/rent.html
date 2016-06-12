@@ -5,21 +5,9 @@
 	<h2>Предоставить бокс клиенту</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="box_owner" role="form" method="post">
-             <div class="form-group">
-                {{ render_field(form['cod_owner'], data_toggle='tooltip') }}
-             </div>
-             <div class="form-group">
-             <!-- Тут будет список -->
-                <label for="list_mark">Марка</label>
-                <select class="form-control" id="list_mark">
-                </select>
-             </div>
-             <div class="form-group">
-             <!-- Тут будет список -->
-                <label for="list_box">Номер бокса</label>
-                <select class="form-control" id="list_box">
-                </select>
-             </div>
+             {{ render_field(form['mark_list'], data_toggle='tooltip') }}
+
+             {{ render_field(form['box_list'], data_toggle='tooltip') }}
 
              {{ render_field(form['date_start'], data_toggle='tooltip') }}
 
@@ -28,16 +16,19 @@
              {{ render_field(form['number_auto'], data_toggle='tooltip') }}
 
              <button type="submit" class="btn btn-success">Предоставить бокс</button>
-             <div class="form-group">
+
+             <!-- <div class="form-group">
                 <label for="number_receipt">Номер квитанции</label>
                 <input type="text" class="form-control" id="number_receipt" placeholder="">
-             </div>
+             </div> -->
+             {#..............#}
 		</form>
 	</div>
 	<hr>
 	<h2>Удалить клиента из бокса</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="del_owner" role="form" method="post">
+
 			{{ render_field(form['cod_receipt'], data_toggle='tooltip') }}
 
 		    <button type="submit" class="btn btn-success">Удалить</button>

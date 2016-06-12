@@ -1,25 +1,26 @@
-﻿{% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_field %}
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
-	<h2>Прием в эксплуатацию нового бокса</h2>
+	<h1>Боксы</h1>
+    <h2>Прием в эксплуатацию нового бокса</h2>
 	<div class="form-group" style="text-align: center">
 		<form name="acceptance" role="form" method="post">
-
-			{{ render_field(form['cod_box_open'], data_toggle='tooltip') }}
 
 			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
 
 			{{ render_field(form['prise'], data_toggle='tooltip') }}
 
-             <div class="form-group">
+			{{ render_field(form['choose_list'], data_toggle='tooltip') }}
+
+             <!--<div class="form-group">
                 <label for="flag">Состояние</label>
                 <select class="form-control" id="flag">
                     <option>Свободен</option>
                     <option>Закрыт</option>
                     <option>Занят</option>
                 </select>
-             </div>
+             </div> -->
 
 		    <button type="submit" class="btn btn-success">Принять</button>
 		</form>
@@ -34,6 +35,25 @@
 
 		</form>
 	</div>
+	<h1>Марки</h1>
+    <h2>Добавить марку в перечень</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="mark_add" role="form" id="mark" method="post">
+
+			{{ render_field(form['mark_name'], data_toggle='tooltip') }}
+
+		    <button type="submit" class="btn btn-success">Добавить</button>
+		</form>
+	</div>
+	<hr>
+	<h2>Удалить марку</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="mark_del" role="form" method="post">
+
+
+
+		    <button type="submit" class="btn btn-success">Удалить</button>
+		</form>
+	</div>
 </div>
 {% endblock %}
-

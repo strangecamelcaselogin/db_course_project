@@ -7,7 +7,7 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from loginform import LoginForm, RegForm, BoxForm, ServiceForm, MarkForm, RefForm
+from forms import LoginForm, RegForm, RentForm, AdminInfo, AdminManage #BoxForm, MarkForm
 
 from settings import *
 
@@ -40,26 +40,35 @@ def admin_required(f):
 
 ################################################
 
+
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', x=42)
+    posts = [{'brand':'Mercedes', 'box': '1' }, {'brand':'Renault', 'box': '3'}]
+    return render_template('index.html', x=42, posts=posts)
 
 
-@app.route('/services', methods=['GET', 'POST'])
+@app.route('/rent', methods=['GET', 'POST'])
 @login_required
 def service():
-    form = ServiceForm(request.form)
+    form = RentForm(request.form)
 
     if request.method == 'POST':
         if form.validate():
             pass
 
         else:
-            flash('not valid form: service')
-    return render_template('services.html', form=form)
+            flash('not valid form: RentForm')
+    return render_template('rent.html', form=form)
 
 
+@app.route('/personal', methods=['GET', 'POST'])
+@login_required
+def personal_area():
+    return render_template('personal.html')
+
+
+'''
 @app.route('/info', methods=['GET', 'POST'])
 @login_required
 def ref():
@@ -71,14 +80,36 @@ def ref():
         else:
             flash('not valid form: reference')
     return render_template('info.html', form=form)
-
+'''
 
 @app.route('/admin_info', methods=['GET', 'POST'])
 @admin_required
 def admin_info():
-    return render_template('admin_info.html')
+    form = AdminInfo(request.form)
+    if request.method == 'POST':
+        print(request.form) # !!!!
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: reference')
+    return render_template('admin_info.html', form=form)
 
 
+@app.route('/admin_manage', methods=['GET', 'POST'])
+@admin_required
+def admin():
+    form = AdminManage(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            pass
+
+        else:
+            flash('not valid form: box')
+    return render_template('admin_manage.html', form=form)
+
+
+'''
 @app.route('/boxes', methods=['GET', 'POST'])
 @admin_required
 def box():
@@ -98,9 +129,30 @@ def mark():
     form = MarkForm(request.form)
 
     if request.method == 'POST':
-        pass
+        if form.validate():
+            mark = form.mark_name.data
+
+            con = lite.connect(DATABASE)
+            with con:
+
+                cur = con.cursor()
+
+                cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark", {'mark': mark})
+
+                if len(cur.fetchall()) == 0:
+'''
+                  #  cur.execute('''INSERT INTO Car_Brands (Brand)
+                  #              VALUES (:mark)''',
+                  #              {'mark': mark})
+'''
+                    flash('Марка добавлена.')
+                    #return redirect('/index')
+
+                else:
+                    flash('Такая марка уже существует')
 
     return render_template('brands.html', form=form)
+'''
 
 
 @app.route('/login', methods=['GET', 'POST'])

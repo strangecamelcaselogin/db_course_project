@@ -17,15 +17,18 @@
 		<style type="text/css">
 	   .Current
 	   {
-		    border-bottom: 2px solid white;
+		    background: linear-gradient(to bottom,#4c4c4c 0,#333 100%);
 	   }
 	    </style>
+
+        <script src="static/jquery-2.1.4.min.js"></script>
+    <script src="static/bootstrap.min.js"></script>
 
 </head>
 
 <body role="document">
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse">
         <div class="container">
             <div class="navbar-header">
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -37,16 +40,22 @@
             </div>
 
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav nav nav-justified">
                     <li><a href="index" >Главная</a></li>
-                    <li><a href="services">Услуги</a></li>
-                    <li><a href="info">Информация</a></li>
+                   <!-- <li><a href="services">Услуги</a></li>
+                    <li><a href="info">Информация</a></li>-->
 
                     {% if ('logged_in' in session) and ('is_admin' in session) %}
-                        <li><a href="admin_info">Администрирование</a> </li>
-                        <li><a href="boxes">Боксы</a>
-                        <li><a href="brands">Марки</a></li>
+                        <li><a href="admin_info">Справки</a> </li>
+                        <li><a href="admin_manage">Управление</a> </li>
 
+                        <!--<li><a href="boxes">Боксы</a>
+                        <li><a href="brands">Марки</a></li>-->
+                    {%else%}
+                        {% if ('logged_in' in session) and not('is_admin' in session) %}
+                            <li><a href="rent">Аренда бокса</a></li>
+                            <li><a href="personal">Личный кабинет</a></li>
+                        {% endif %}
                     {% endif %}
 
                     {% if 'logged_in' in session %}
@@ -60,7 +69,9 @@
         </div>
 	</nav>
 
-	<div class="container" style="min-height:100% width:80%">
+ <div id="wrap">
+
+	<div class="container" style="overflow:auto;" id="len">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul class=flashes>
@@ -78,16 +89,23 @@
             {% endif %}
         {% endwith %}
 
-        <div class="tab-content">
-            {% block content %}{% endblock %}
-        </div>
+            <div class="tab-content" style="background: url('static/back.png'); min-height: 100%;">
+                {% block content %}{% endblock %}
+            </div>
 	</div>
+
+</div>
+    <footer class="footer" style="background: #4f4f4f; border-top: 1px solid #5d5d5d;">
+
+        <div style="text-align: center; padding-top: 20px;">
+        <p>Обратная связь:
+	    <br> Телефон: + 8 800 555 35 35
+	    <br> E-mail: qwerty@mail.ru</p>
+        </div>
+    </footer>
 
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>-->
-
-    <script src="static/jquery-2.1.4.min.js"></script>
-    <script src="static/bootstrap.min.js"></script>
 
 
 	<script type="text/javascript">
