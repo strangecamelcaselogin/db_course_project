@@ -4,7 +4,7 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from sql_core import login, register, add_box, delete_box, add_mark, delete_mark
+from sql_core import login, register, add_box, close_box, add_mark, form_mark_list, delete_mark, rent_, refuse
 
 from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
     NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm
@@ -54,6 +54,8 @@ def index():
 @app.route('/rent', methods=['GET', 'POST'])
 @login_required
 def rent():
+    mark = dict()
+
     forms = dict()
     forms['RentForm'] = RentForm()
     forms['RefuseForm'] = RefuseForm()
@@ -63,8 +65,12 @@ def rent():
             forms['RentForm'] = RentForm(request.form)
             form = forms['RentForm']
             if form.validate():
-                pass
-                forms['RentForm'] = RentForm()
+                if rent_(form):
+                    flash('Вы арендовали бокс')
+                else:
+                    flash('К сожалению, на данный момент свободных боксов нет')
+
+            forms['RentForm'] = RentForm()
 
         elif 'refuse' in request.form: # ???
             forms['RefuseForm'] = RefuseForm(request.form)
@@ -127,8 +133,12 @@ def admin_manage():
             print('cb')
             f = forms['CloseBoxForm']
             if f.validate():
-                print('valid')
-                forms['CloseBoxForm'] = CloseBoxForm()
+                if close_box(f):
+                    flash('Бокс закрыт')
+                else:
+                    flash('Такого бокса нет в списке')
+
+            forms['CloseBoxForm'] = CloseBoxForm()
 
         elif 'new_mark' in request.form:
             forms['NewMarkForm'] = NewMarkForm(request.form)
@@ -148,8 +158,13 @@ def admin_manage():
             print('dm')
             f = forms['DeleteMarkForm']
             if f.validate():
-                print('valid')
-                forms['DeleteMarkForm'] = DeleteMarkForm()
+                if delete_mark(f.dm_mark_name.data):  # DONE
+                    flash('Марка удалена')
+
+                else:
+                    flash('Какой то косяк')
+
+            forms['DeleteMarkForm'] = DeleteMarkForm()
 
         else:
             flash('что то совсем странное')
