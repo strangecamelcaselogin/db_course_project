@@ -6,6 +6,7 @@ from flask import session
 from settings import *
 
 
+# LOGIN ADN REGISTER
 def login(form):
     phone = form.phone.data
     hashed_password = sha256(form.password.data.encode('utf-8')).hexdigest()
@@ -59,6 +60,15 @@ def register(form):
     return False
 
 
+# ADMIN MANAGE
+def add_box():
+    pass
+
+
+def delete_box():
+    pass
+
+
 def add_mark(mark_name):
     con = lite.connect(DATABASE)
     with con:
@@ -72,4 +82,8 @@ def add_mark(mark_name):
             return True
 
     return False
+
+
+def delete_mark():
+    pass
 

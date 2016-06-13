@@ -4,7 +4,7 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from sql_core import login, register, add_mark
+from sql_core import login, register, add_box, delete_box, add_mark, delete_mark
 
 from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
     NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm
@@ -66,7 +66,7 @@ def rent():
                 pass
                 forms['RentForm'] = RentForm()
 
-        elif 'refuse' in request.form:
+        elif 'refuse' in request.form: # ???
             forms['RefuseForm'] = RefuseForm(request.form)
             form = forms['RefuseForm']
             if form.validate():
