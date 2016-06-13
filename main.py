@@ -4,7 +4,7 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from sql_core import login, register, add_mark
+from sql_core import login, register, add_mark, add_box
 
 from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
     NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm
@@ -115,8 +115,12 @@ def admin_manage():
             print('nb')
             f = forms['NewBoxForm']
             if f.validate():
-                print('valid')
-                forms['NewBoxForm'] = NewBoxForm()
+                if add_box(f):
+                    flash('Новый бокс добавлен')
+                else:
+                    flash('Такой марки нет в списке')
+
+            forms['NewBoxForm'] = NewBoxForm()
 
         elif 'close_box' in request.form:
             forms['CloseBoxForm'] = CloseBoxForm(request.form)

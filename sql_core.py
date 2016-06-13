@@ -73,3 +73,24 @@ def add_mark(mark_name):
 
     return False
 
+def add_box(form):
+    mark_name = form.nb_mark_name.data
+    cost = form.cost.data
+    status = '1'
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+        cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark",
+                    {'mark': mark_name})
+
+        if len(cur.fetchall()) != 0:
+            cur.execute('''INSERT INTO Box (Brand, Price, Status) VALUES (:mark, :cost, :status)''',
+                        {'mark': mark_name,
+                         'cost': cost,
+                         'status': status})
+
+            return True
+
+    return False
+
