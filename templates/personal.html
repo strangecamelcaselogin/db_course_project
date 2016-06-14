@@ -3,5 +3,20 @@
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
 	<h1>Личный кабинет</h1>
+    <div class="table-responsive">
+	<table  class="table table-bordered table-hover">
+                     <caption>Квитанции</caption>
+                     <tr>
+                         <th>Номер квианции</th>
+                         <th>Отказаться от аренды</th>
+                     </tr>
+                    {% for t in ts %}
+                     <tr>
+                         <td>{{t}}</td>
+                         <td><button class="btn btn-success" name="{{t}}"><image src="static/close.png" width="15" height="15"></image></button></td>
+                     </tr>
+                    {% endfor %}
+                 </table>
+    </div>
 </div>
 {% endblock %}
