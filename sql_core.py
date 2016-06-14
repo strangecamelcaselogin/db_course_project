@@ -1,5 +1,7 @@
-import sqlite3 as lite
 from hashlib import sha256
+from datetime import date
+
+import sqlite3 as lite
 
 from flask import session
 
@@ -21,6 +23,25 @@ def form_mark_list():
             brand[row[0]] = row[0]
 
     return brand
+
+
+def form_ticket_list():
+    ticket = dict()
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute("SELECT Placed.Ticket_Number FROM Placed, Cars, Clients "
+                    "WHERE (Placed.Car_Number = Cars.Car_Number) and (Clients.ID_client = Cars.ID_client)"
+                    "and (Clients.Phone = :phone)",
+                    {'phone': session['phone']})
+
+        rows = cur.fetchall()
+        for row in rows:
+            ticket[row[0]] = row[0]
+
+    return ticket
 
 # LOGIN ADN REGISTER
 def login(form):
@@ -148,7 +169,19 @@ def delete_mark(mark_name):
 
     return False
 
+def update_box(form):
+    n = float(form.u_cost.data.replace(',', '.'))
 
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+        cur.execute("UPDATE Box SET Price = Price * :n",
+                    {'n': n})
+        return True
+
+    return False
+
+# RENT
 def rent_(form):
     mark = form.mark_list.data
     date_end = form.date_end.data
@@ -162,17 +195,20 @@ def rent_(form):
         cur.execute("SELECT ID_Box, min(Price) FROM Box WHERE (Brand = :mark) and (Status = '0')",
                     {'mark': mark})
 
-        row = cur.fetchall()
+        rows = cur.fetchall()
 
         cur.execute("SELECT * FROM Placed WHERE Car_Number = :n_auto",
                     {'n_auto': n_auto})
 
-        if (len(row[0]) != 0) and (len(cur.fetchall()) == 0):
+        if (len(rows[0]) != 0) and (len(cur.fetchall()) == 0):
             cur.execute('''INSERT INTO Placed (ID_Box, Car_Number, Rent_Start, Rent_End) VALUES (:id_box, :n_auto, :start, :end)''',
-                        {'id_box': row[0][0],
+                        {'id_box': rows[0][0],
                          'n_auto': n_auto,
                          'start': date_start,
                          'end': date_end})
+
+            cur.execute( '''UPDATE Box SET Status = '1' WHERE ID_Box = :id_box''',
+                        {'id_box': rows[0][0]})
 
             #записываем новую машину в базу
             cur.execute("SELECT * FROM Cars WHERE Car_Number = :n_auto",
@@ -195,6 +231,53 @@ def rent_(form):
 
     return False
 
+
+# ADMIN INFO
+def get_list_cwm(form):
+    mark_name = form.mark_name.data
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute("select Clients.First_Name, Clients.Middle_Name, Clients.Second_Name from Clients, Cars "
+                    "where  (Cars.Brand = :mark_name) and (Clients.ID_client = Cars.ID_client)",
+                    {'mark_name': mark_name})
+
+        info = cur.fetchall()
+
+    return info
+
+
+def get_list_cde(form):
+    date = form.date_end.data
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute("select Clients.First_Name, Clients.Middle_Name, Clients.Second_Name from Clients, Cars, Placed "
+                    "where  "
+                    "(Placed.Rent_End = :date) and (Placed.Car_Number = Cars.Car_Number) "
+                    "and (Clients.ID_client = Cars.ID_client)",
+                    {'date': date})
+
+        info = cur.fetchall()
+
+    return info
+
+
+def get_list_c():
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute("select Clients.First_Name, Clients.Middle_Name, Clients.Second_Name, Clients.Address from Clients")
+
+        info = cur.fetchall()
+
+    return info
 
 
 def refuse():

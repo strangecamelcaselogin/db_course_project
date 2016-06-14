@@ -30,6 +30,21 @@
 
 		</form>
 	</div>
+
+	<hr>
+
+	<h2>Увеличить стоимость аренды</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="close" role="form" method="post">
+
+            {%  for field in f['UpdateBoxForm']%}
+			    {{ render_field(field, data_toogle='tooltip') }}
+            {% endfor %}
+
+		    <button type="submit" class="btn btn-success" name="update_box">Изменить</button>
+
+		</form>
+	</div>
 	<hr id="hr_between">
 	<h1>Марки</h1>
     <h2>Добавить марку в перечень</h2>

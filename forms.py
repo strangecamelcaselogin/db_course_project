@@ -1,5 +1,5 @@
 from wtforms import Form
-from wtforms import StringField, PasswordField, SelectField
+from wtforms import StringField, PasswordField, SelectField, IntegerField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 
 from sql_core import form_mark_list
@@ -19,9 +19,11 @@ def password_validator(self, field):
             raise ValidationError('Недопустимый символ')
 
 
+
+
 # REGISTER AND LOGIN
 class LoginForm(Form):
-    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)], description="Введите логин")  # ???
+    phone = StringField('Телефон', [DataRequired(), Length(min=5, max=15)], description="Введите логин")  #
     password = PasswordField('Пароль', [DataRequired(), Length(min=8, max=32), password_validator],
                              description="Минимальная длина - 8 символов. Максимальная длина - 32 символа")
 
@@ -71,6 +73,10 @@ class CloseBoxForm(Form):
     cb_box_code = StringField('Номер бокса', [DataRequired(), Length(min=1, max=32)],
                               description="Бокс с указанным номером будет закрыт")
 
+class UpdateBoxForm(Form):
+    u_cost = StringField('Число', [DataRequired()],
+                              description="Число, в которое следует увеличить цену")
+
 
 class NewMarkForm(Form):
     nm_mark_name = StringField('Название марки', [DataRequired(), Length(min=1, max=32)],
@@ -84,6 +90,12 @@ class DeleteMarkForm(Form):
 
 # ADMIN INFO ????
 class AdminInfo(Form):
-    mark_name = StringField('Марка', [DataRequired(), Length(min=1, max=32)])
-    box_code = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)])
+    pass
+
+class ClientMarkInfo(Form):
+    mark_name = SelectField('Название марки', choices=[(i, i) for i in mark.keys()],
+                            description="Получить список с указанной маркой")
+    #box_code = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)])
+
+class DateEndInfo(Form):
     date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)])

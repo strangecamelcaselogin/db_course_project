@@ -4,10 +4,11 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from sql_core import login, register, add_box, close_box, add_mark, form_mark_list, delete_mark, rent_, refuse
+from sql_core import login, register, add_box, close_box, add_mark, form_mark_list, delete_mark, rent_, refuse, update_box, \
+    get_list_cwm, get_list_cde, form_ticket_list, get_list_c
 
 from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
-    NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm
+    NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm, UpdateBoxForm, ClientMarkInfo, DateEndInfo
 
 from settings import *
 
@@ -45,8 +46,8 @@ def admin_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
-    posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
-
+    #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
+    posts = form_mark_list()
     return render_template('index.html', x=42, posts=posts)
 
 
@@ -86,23 +87,53 @@ def rent():
 @app.route('/personal', methods=['GET', 'POST'])
 @login_required
 def personal_area():
-    return render_template('personal.html')
+    ticket = form_ticket_list()
+
+    return render_template('personal.html', ts = ticket)
 
 
 # ADMIN STUFF
 @app.route('/admin_info', methods=['GET', 'POST'])
 @admin_required
 def admin_info():
-    #form = AdminInfo(request.form)
-    #if request.method == 'POST':
-    #    if form.validate():
-    #        pass
-    #    else:
-    #        flash('not valid form: reference')
+    info_cwm = dict()
+    info_cde = dict()
+    info_c = dict()
 
-    information = dict()
+    forms = dict()
+    forms['ClientMarkInfo'] = ClientMarkInfo()
+    forms['DateEndInfo'] = DateEndInfo()
 
-    return render_template('admin_info.html', inf=information)
+    if request.method == 'POST':
+        if 'get_list_c' in request.form:
+            info_c = get_list_c()
+
+            return render_template('admin_info.html', f=forms, infs_c=info_c)
+
+        if 'get_list_cwm' in request.form:
+            forms['ClientMarkInfo'] = ClientMarkInfo(request.form)
+            f = forms['ClientMarkInfo']
+            if f.validate():
+                info_cwm = get_list_cwm(f)
+
+            forms['ClientMarkInfo'] = ClientMarkInfo()
+
+            return render_template('admin_info.html', f=forms, infs_cwm=info_cwm)
+
+        elif 'get_list_cde' in request.form:
+            forms['DateEndInfo'] = DateEndInfo(request.form)
+            f = forms['DateEndInfo']
+            if f.validate():
+                info_cde = get_list_cde(f)
+
+            forms['DateEndInfo'] = DateEndInfo()
+
+            return render_template('admin_info.html', f=forms, infs_cde=info_cde)
+
+
+    return render_template('admin_info.html', f=forms)
+
+
 
 
 @app.route('/admin_manage', methods=['GET', 'POST'])
@@ -112,6 +143,7 @@ def admin_manage():
     forms = dict()
     forms['NewBoxForm'] = NewBoxForm()
     forms['CloseBoxForm'] = CloseBoxForm()
+    forms['UpdateBoxForm'] = UpdateBoxForm()
     forms['NewMarkForm'] = NewMarkForm()
     forms['DeleteMarkForm'] = DeleteMarkForm()
 
@@ -139,6 +171,17 @@ def admin_manage():
                     flash('Такого бокса нет в списке')
 
             forms['CloseBoxForm'] = CloseBoxForm()
+
+        elif 'update_box' in request.form:
+            forms['UpdateBoxForm'] = UpdateBoxForm(request.form)
+            f = forms['UpdateBoxForm']
+            if f.validate():
+                if update_box(f):
+                    flash('Маша не может в буковы')
+                else:
+                    flash('Такого бокса нет в списке')
+
+            forms['UpdateBoxForm'] = UpdateBoxForm()
 
         elif 'new_mark' in request.form:
             forms['NewMarkForm'] = NewMarkForm(request.form)
