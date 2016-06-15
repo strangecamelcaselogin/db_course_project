@@ -46,8 +46,8 @@ class RentForm(Form):
     mark_list = SelectField('Марка', choices=[(i, i) for i in mark.keys()])  # (list(mappers.keys())[i], list(mappers.keys())[i]) for i in range(len(mappers.keys()))
    # box_list = SelectField('Бокс', choices=[('', '1'), ('', '2'), ('', '3')])
 
-    date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)], description="ДД.ММ.ГГГГ")
     date_start = StringField('Дата начала аренды', [DataRequired(), Length(min=1, max=32)], description="ДД.ММ.ГГГГ")
+    date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)], description="ДД.ММ.ГГГГ")
     number_auto = StringField('Номер авто', [DataRequired(), Length(min=1, max=32)])
 
 

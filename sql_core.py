@@ -32,14 +32,15 @@ def form_ticket_list():
     with con:
         cur = con.cursor()
 
-        cur.execute("SELECT Placed.Ticket_Number FROM Placed, Cars, Clients "
+        cur.execute("SELECT Placed.Ticket_Number, Placed.ID_Box, Placed.Car_Number, Placed.Rent_Start, Placed.Rent_End"
+                    " FROM Placed, Cars, Clients "
                     "WHERE (Placed.Car_Number = Cars.Car_Number) and (Clients.ID_client = Cars.ID_client)"
                     "and (Clients.Phone = :phone)",
                     {'phone': session['phone']})
 
         rows = cur.fetchall()
         for row in rows:
-            ticket[row[0]] = row[0]
+            ticket[row] = row
 
     return ticket
 
@@ -199,6 +200,8 @@ def rent_(form):
 
         cur.execute("SELECT * FROM Placed WHERE Car_Number = :n_auto",
                     {'n_auto': n_auto})
+
+        print(rows[0])
 
         if (len(rows[0]) != 0) and (len(cur.fetchall()) == 0):
             cur.execute('''INSERT INTO Placed (ID_Box, Car_Number, Rent_Start, Rent_End) VALUES (:id_box, :n_auto, :start, :end)''',
