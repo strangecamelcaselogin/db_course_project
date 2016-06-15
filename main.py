@@ -55,32 +55,24 @@ def index():
 @app.route('/rent', methods=['GET', 'POST'])
 @login_required
 def rent():
-    mark = dict()
-
-    forms = dict()
-    forms['RentForm'] = RentForm()
-    forms['RefuseForm'] = RefuseForm()
+    form = RentForm(request.form)
+    form.mark_list.choices = [(i, i) for i in form_mark_list().keys()]
 
     if request.method == 'POST':
-        if 'rent' in request.form:
-            forms['RentForm'] = RentForm(request.form)
-            form = forms['RentForm']
-            if form.validate():
+        if form.validate():
+            try:
                 if rent_(form):
                     flash('Вы арендовали бокс')
+                    return redirect('/personal')
+
                 else:
-                    flash('К сожалению, на данный момент свободных боксов нет')
+                    flash('К сожалению, на данный момент свободных боксов нет (не факт)')
+                    return redirect('/index')
 
-            forms['RentForm'] = RentForm()
+            except Exception as e:
+                flash('Возникла ошибка: {}'.format(e))
 
-        elif 'refuse' in request.form: # ???
-            forms['RefuseForm'] = RefuseForm(request.form)
-            form = forms['RefuseForm']
-            if form.validate():
-                pass
-                forms['RefuseForm'] = RefuseForm()
-
-    return render_template('rent.html', f=forms)
+    return render_template('rent.html', f=form)
 
 
 # PERSONAL
@@ -89,20 +81,18 @@ def rent():
 def personal_area():
     ticket = form_ticket_list()
 
-    return render_template('personal.html', ts = ticket)
+    return render_template('personal.html', ts=ticket)
 
 
 # ADMIN STUFF
-@app.route('/admin_info', methods=['GET', 'POST'])
+@app.route('/admin_info', methods=['GET', 'POST'])  # не работает :/
 @admin_required
 def admin_info():
-    info_cwm = dict()
-    info_cde = dict()
-    info_c = dict()
-
     forms = dict()
-    forms['ClientMarkInfo'] = ClientMarkInfo()
-    forms['DateEndInfo'] = DateEndInfo()
+    forms['ClientMarkInfo'] = ClientMarkInfo(request.form)
+    forms['ClientMarkInfo'].mark_name.choices = [(i, i) for i in form_mark_list().keys()]
+
+    forms['DateEndInfo'] = DateEndInfo(request.form)
 
     if request.method == 'POST':
         if 'get_list_c' in request.form:
@@ -111,103 +101,91 @@ def admin_info():
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
         if 'get_list_cwm' in request.form:
-            forms['ClientMarkInfo'] = ClientMarkInfo(request.form)
             f = forms['ClientMarkInfo']
             if f.validate():
                 info_cwm = get_list_cwm(f)
 
-            forms['ClientMarkInfo'] = ClientMarkInfo()
-
-            return render_template('admin_info.html', f=forms, infs_cwm=info_cwm)
+                return render_template('admin_info.html', f=forms, infs_cwm=info_cwm)
 
         elif 'get_list_cde' in request.form:
-            forms['DateEndInfo'] = DateEndInfo(request.form)
             f = forms['DateEndInfo']
             if f.validate():
                 info_cde = get_list_cde(f)
 
-            forms['DateEndInfo'] = DateEndInfo()
-
-            return render_template('admin_info.html', f=forms, infs_cde=info_cde)
-
+                return render_template('admin_info.html', f=forms, infs_cde=info_cde)
 
     return render_template('admin_info.html', f=forms)
-
-
 
 
 @app.route('/admin_manage', methods=['GET', 'POST'])
 @admin_required
 def admin_manage():
+    marks_list = [(i, i) for i in form_mark_list().keys()]
 
     forms = dict()
-    forms['NewBoxForm'] = NewBoxForm()
-    forms['CloseBoxForm'] = CloseBoxForm()
-    forms['UpdateBoxForm'] = UpdateBoxForm()
-    forms['NewMarkForm'] = NewMarkForm()
-    forms['DeleteMarkForm'] = DeleteMarkForm()
+    forms['NewBoxForm'] = NewBoxForm(request.form)
+    forms['NewBoxForm'].nb_mark_name.choices = marks_list
+
+    forms['CloseBoxForm'] = CloseBoxForm(request.form)
+    forms['UpdateBoxForm'] = UpdateBoxForm(request.form)
+    forms['NewMarkForm'] = NewMarkForm(request.form)
+
+    forms['DeleteMarkForm'] = DeleteMarkForm(request.form)
+    forms['DeleteMarkForm'].dm_mark_name.choices = marks_list
 
     if request.method == 'POST':
         if 'new_box' in request.form:
-            forms['NewBoxForm'] = NewBoxForm(request.form)
-            print('nb')
             f = forms['NewBoxForm']
             if f.validate():
                 if add_box(f):
                     flash('Новый бокс добавлен')
-                else:
-                    flash('Такой марки нет в списке')
+                    return redirect('/admin_manage')
 
-            forms['NewBoxForm'] = NewBoxForm()
+            else:
+                flash('Проблема')
 
         elif 'close_box' in request.form:
-            forms['CloseBoxForm'] = CloseBoxForm(request.form)
-            print('cb')
             f = forms['CloseBoxForm']
             if f.validate():
                 if close_box(f):
                     flash('Бокс закрыт')
+                    return redirect('/admin_manage')
+
                 else:
                     flash('Такого бокса нет в списке')
 
-            forms['CloseBoxForm'] = CloseBoxForm()
-
         elif 'update_box' in request.form:
-            forms['UpdateBoxForm'] = UpdateBoxForm(request.form)
             f = forms['UpdateBoxForm']
+
             if f.validate():
                 if update_box(f):
                     flash('Маша не может в буковы')
+                    return redirect('/admin_manage')
+
                 else:
                     flash('Такого бокса нет в списке')
 
-            forms['UpdateBoxForm'] = UpdateBoxForm()
-
         elif 'new_mark' in request.form:
-            forms['NewMarkForm'] = NewMarkForm(request.form)
-            print('nm')
             f = forms['NewMarkForm']
+
             if f.validate():
-                if add_mark(f.nm_mark_name.data):  # DONE
+                if add_mark(f.nm_mark_name.data):
                     flash('Марка добавлена.')
+                    return redirect('/admin_manage')
 
                 else:
                     flash('Такая марка уже существует')
 
-            forms['NewMarkForm'] = NewMarkForm()
-
         elif 'del_mark' in request.form:
-            forms['DeleteMarkForm'] = DeleteMarkForm(request.form)
-            print('dm')
             f = forms['DeleteMarkForm']
+
             if f.validate():
-                if delete_mark(f.dm_mark_name.data):  # DONE
+                if delete_mark(f.dm_mark_name.data):
                     flash('Марка удалена')
+                    return redirect('/admin_manage')
 
                 else:
-                    flash('Какой то косяк')
-
-            forms['DeleteMarkForm'] = DeleteMarkForm()
+                    flash('Не удалилась')
 
         else:
             flash('что то совсем странное')
