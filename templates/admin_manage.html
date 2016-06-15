@@ -66,9 +66,9 @@
 	<div class="form-group" style="text-align: center">
 		<form name="mark_del" role="form" method="post">
 
-            {%  for field in f['DeleteMarkForm']%}
+            {% for field in f['DeleteMarkForm'] %}
 			    {{ render_field(field, data_toogle='tooltip') }}
-            {% endfor %}
+            {%  endfor %}
 
 		    <button type="submit" class="btn btn-success" name="del_mark">Удалить</button>
 

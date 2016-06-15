@@ -6,24 +6,11 @@
 	<div class="form-group" style="text-align: center">
 		<form name="box_owner" role="form" method="post">
 
-            {% for field in f['RentForm'] %}
+            {% for field in f %}
                 {{ render_field(field, data_toogle='tooltip') }}
             {% endfor %}
 
              <button type="submit" class="btn btn-success" name="rent">Предоставить бокс</button>
-
-		</form>
-	</div>
-	<hr>
-	<h2>Удалить клиента из бокса</h2>
-	<div class="form-group" style="text-align: center">
-		<form name="del_owner" role="form" method="post">
-
-            {% for field in f['RefuseForm'] %}
-                {{ render_field(field, data_toggle='tooltip') }}
-            {% endfor %}
-
-		    <button type="submit" class="btn btn-success" name="refuse">Удалить</button>
 
 		</form>
 	</div>
