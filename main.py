@@ -80,6 +80,7 @@ def rent():
 @login_required
 def personal_area():
     ticket = form_ticket_list()
+    print(ticket)
 
     return render_template('personal.html', ts=ticket)
 
