@@ -80,6 +80,7 @@ def rent():
 @login_required
 def personal_area():
     ticket = form_ticket_list()
+    print(ticket)
 
     if request.method == 'POST':
         ticket_id = int(request.form['ticket_id'])
