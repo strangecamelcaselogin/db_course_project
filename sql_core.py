@@ -40,12 +40,12 @@ def login(form):
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        cur.execute('''SELECT  * FROM Clients WHERE Phone = :phone AND Password = :password''',
-                    {'phone': phone, 'password': hashed_password})
+        cnt = cur.execute('''SELECT COUNT(*)
+                             FROM Clients
+                             WHERE Phone = :phone AND Password = :password''',
+                          {'phone': phone, 'password': hashed_password}).fetchone()[0]
 
-        data = cur.fetchall()
-
-        if len(data) == 1:
+        if cnt == 1:
             session['logged_in'] = True
             session['phone'] = phone
             if phone == ADMIN:
@@ -69,9 +69,10 @@ def register(form):
     with con:
         cur = con.cursor()
 
-        cur.execute("SELECT * FROM Clients WHERE Phone = :phone", {'phone': phone})
+        cnt = cur.execute("SELECT COUNT(*) FROM Clients WHERE Phone = :phone",
+                          {'phone': phone}).fetchone()[0]
 
-        if len(cur.fetchall()) == 0:
+        if cnt == 0:
             cur.execute('''INSERT INTO Clients (Second_Name, First_Name, Middle_Name, Address, Phone, Password)
                            VALUES (:s_name, :f_name, :m_name, :address, :phone, :password)''',
                         {'s_name': s_name,
@@ -91,40 +92,36 @@ def register(form):
 def add_box(form):
     mark_name = form.nb_mark_name.data
     cost = form.cost.data
-    status = '0'
+    #status = '0'
 
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark",
-                    {'mark': mark_name})
 
-        if len(cur.fetchall()) != 0:
-            cur.execute('''INSERT INTO Box (Brand, Price, Status)
-                           VALUES (:mark, :cost, :status)''',
-                        {'mark': mark_name,
-                         'cost': cost,
-                         'status': status})
+        cur.execute('''INSERT INTO Box (Brand, Price, Status)
+                       VALUES (:mark, :cost, :status)''',
+                    {'mark': mark_name,
+                     'cost': cost,
+                     'status': OPENED})
 
-            return True
-
-    return False
+    return True
 
 
 def close_box(form):
     id_box = form.cb_box_code.data
-    status = '2'
+    #status = '2'
 
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        cur.execute("SELECT * FROM Box WHERE ID_Box = :id",
-                    {'id': id_box})
 
-        if len(cur.fetchall()) != 0: # BAD BAD BAD
+        cnt = cur.execute("SELECT COUNT(*) FROM Box WHERE ID_Box = :id",
+                          {'id': id_box}).fetchone()[0]
+
+        if cnt == 1:
             cur.execute('''UPDATE Box SET Status = :status  WHERE ID_Box = :id''',
                         {'id': id_box,
-                         'status': status})
+                         'status': CLOSED})
             return True
 
     return False
@@ -136,8 +133,8 @@ def update_box(form):
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        cur.execute("UPDATE Box SET Price = Price * :n",
-                    {'n': n})
+        cur.execute("UPDATE Box SET Price = Price * :n", {'n': n})
+
     return True
 
 
@@ -145,10 +142,11 @@ def add_mark(mark_name):
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark",
-                    {'mark': mark_name})
 
-        if len(cur.fetchall()) == 0:
+        cnt = cur.execute("SELECT COUNT(*) FROM Car_Brands WHERE Brand = :mark",
+                          {'mark': mark_name}).fetchone()[0]
+
+        if cnt == 0:
             cur.execute('''INSERT INTO Car_Brands (Brand) VALUES (:mark)''',
                         {'mark': mark_name})
             return True
@@ -160,10 +158,11 @@ def delete_mark(mark_name):
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        cur.execute("SELECT * FROM Car_Brands WHERE Brand = :mark",
-                    {'mark': mark_name})
 
-        if len(cur.fetchall()) != 0:
+        cnt = cur.execute("SELECT COUNT(*) FROM Car_Brands WHERE Brand = :mark",
+                          {'mark': mark_name}).fetchone()[0]
+
+        if cnt == 1:
             cur.execute("DELETE FROM Car_Brands WHERE Brand = :mark",
                         {'mark': mark_name})
             return True
@@ -173,25 +172,23 @@ def delete_mark(mark_name):
 
 # RENT
 def rent_(form):
-    #try:
+    mark = form.mark_list.data
     date_end = datetime.strptime(form.date_end.data, '%d.%m.%Y')
     date_start = datetime.strptime(form.date_start.data, '%d.%m.%Y')
-
-    if date_end <= date_start:  # Все это в валидатор бы...
-        raise Exception('Дата окончания аренды раньше даты начала.')
-
-
-    mark = form.mark_list.data
     n_auto = form.number_auto.data
+
+    if date_end <= date_start:
+        raise Exception('Дата окончания аренды раньше даты начала.')
 
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
         id_box = cur.execute('''SELECT ID_Box, min(Price)
-                              FROM Box
-                              WHERE (Brand = :mark) and (Status = '0')''',
-                             {'mark': mark}).fetchall()[0][0]
+                                FROM Box
+                                WHERE (Brand = :mark) and (Status = :opened)''',
+                             {'mark': mark,
+                              'opened': OPENED}).fetchone()[0]
 
         cnt = cur.execute("SELECT COUNT(*) FROM Placed WHERE Car_Number = :n_auto",
                           {'n_auto': n_auto}).fetchone()[0]
@@ -206,26 +203,38 @@ def rent_(form):
                          'start': date_start,
                          'end': date_end})
 
-            cur.execute("UPDATE Box SET Status = '1' WHERE ID_Box = :id_box",
-                        {'id_box': id_box})
+            cur.execute("UPDATE Box SET Status = :busy WHERE ID_Box = :id_box",
+                        {'busy': BUSY,
+                         'id_box': id_box})
 
-            #записываем новую машину в базу
+            # Записываем новую машину в базу
             cnt = cur.execute("SELECT COUNT(*) FROM Cars WHERE Car_Number = :n_auto",
                               {'n_auto': n_auto}).fetchone()[0]
 
             if cnt == 0:
                 client = cur.execute("SELECT ID_Client FROM Clients WHERE Phone = :phone",
-                                         {'phone': session['phone']}).fetchone() # ??
+                                     {'phone': session['phone']}).fetchone()
 
                 cur.execute('''INSERT INTO Cars (Car_Number, ID_client, Brand)
                                VALUES (:n_auto, :id_client, :mark)''',
-                                {'n_auto': n_auto,
-                                 'id_client': client[0], # ??
-                                 'mark': mark})
+                            {'n_auto': n_auto,
+                             'id_client': client[0],
+                             'mark': mark})
 
             return True
 
     return False
+
+
+def refuse(phone, ticket_id):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+        # Проверить пользователя ли эта квитанция
+        # сделать все остальное
+        # ?????
+        # PROFIT
+
 
 
 # ADMIN INFO
@@ -274,7 +283,3 @@ def get_list_c():
                               FROM Clients''').fetchall()
 
     return info
-
-
-def refuse():
-    pass
