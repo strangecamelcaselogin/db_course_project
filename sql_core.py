@@ -117,9 +117,9 @@ def close_box(form): # переделать
                           {'id': id_box}).fetchone()[0]
 
         if cnt == 1:
-            cur.execute("UPDATE Box SET Status = :status  WHERE ID_Box = :id",
-                        {'id': id_box,
-                         'status': CLOSED})
+            cur.execute("DELETE FROM Box WHERE ID_Box = :id",
+                        {'id': id_box})
+
             return True
 
     return False
