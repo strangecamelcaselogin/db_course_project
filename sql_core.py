@@ -25,13 +25,8 @@ def form_ticket_list():
         cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start, Placed.Rent_End
                         FROM Box, Placed, Cars, Clients
                        WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
-<<<<<<< HEAD
                        AND (Clients.Phone = :phone) AND (Box.ID_Box = Placed.ID_Box)''',
                         {'phone': session['phone']})
-=======
-                       AND (Clients.Phone = :phone)''',
-                    {'phone': session['phone']})
->>>>>>> refs/remotes/origin/save_future
 
         rows = cur.fetchall()
 

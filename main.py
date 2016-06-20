@@ -80,12 +80,9 @@ def rent():
 @login_required
 def personal_area():
     ticket = form_ticket_list()
-<<<<<<< HEAD
     client = get_name_client()
     print(ticket)
-=======
-    #print(ticket)
->>>>>>> refs/remotes/origin/save_future
+
 
     if request.method == 'POST':
         ticket_id = int(request.form['ticket_id'])
