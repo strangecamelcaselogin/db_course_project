@@ -22,15 +22,32 @@ def form_ticket_list():
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Placed.Ticket_Number FROM Placed, Cars, Clients
+        cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start, Placed.Rent_End
+                        FROM Box, Placed, Cars, Clients
                        WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
-                       AND (Clients.Phone = :phone)''',
-                    {'phone': session['phone']})
+                       AND (Clients.Phone = :phone) AND (Box.ID_Box = Placed.ID_Box)''',
+                        {'phone': session['phone']})
 
         rows = cur.fetchall()
 
-    return {row[0]: row[0] for row in rows}
+    #return {row[0]: row[0] for row in rows}
+    return (rows)
 
+
+def get_name_client():
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute('''SELECT Clients.First_Name, Clients.Second_Name
+                        FROM  Clients
+                       WHERE Clients.Phone = :phone''',
+                        {'phone': session['phone']})
+
+        rows = cur.fetchone()
+
+    #return {row[0]: row[0] for row in rows}
+    return (rows)
 
 # LOGIN ADN REGISTER
 def login(form):

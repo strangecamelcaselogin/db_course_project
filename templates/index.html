@@ -8,14 +8,10 @@
 	<div>Наша фирма предоставляет услуги предоставления парковки</div>
 
     <div style="margin-bottom: 15px;">Мы обслуживаем следующие марки:</div>
-
+    <div style="text-align: center;">
     {% for post in posts %}
-            <div style="display: block;"><u>{{post}}</u></div>
-
+            <image src="static/brand/{{post}}.png" alt="{{post}}" class="brand_img"></image>
     {% endfor %}
-
-    <script>
-        $('#myModal').modal(options)
-    </script>
-
+    </div>
+</div>
 {% endblock %}
