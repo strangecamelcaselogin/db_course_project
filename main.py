@@ -5,7 +5,7 @@ from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
 from sql_core import login, register, add_box, close_box, add_mark, form_mark_list, delete_mark, rent_, refuse, update_box, \
-    get_list_cwm, get_list_cde, form_ticket_list, get_list_c
+    get_list_cwm, get_list_cde, form_ticket_list, get_list_c, get_name_client
 
 from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
     NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm, UpdateBoxForm, ClientMarkInfo, DateEndInfo
@@ -80,6 +80,7 @@ def rent():
 @login_required
 def personal_area():
     ticket = form_ticket_list()
+    client = get_name_client()
     print(ticket)
 
     if request.method == 'POST':
@@ -89,7 +90,7 @@ def personal_area():
         if refuse(phone, ticket_id):
             pass
 
-    return render_template('personal.html', ts=ticket)
+    return render_template('personal.html', ts=ticket, client=client)
 
 
 # ADMIN STUFF
