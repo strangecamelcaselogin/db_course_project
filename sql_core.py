@@ -25,7 +25,7 @@ def form_ticket_list():
         cur.execute('''SELECT Placed.Ticket_Number FROM Placed, Cars, Clients
                        WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
                        AND (Clients.Phone = :phone)''',
-                        {'phone': session['phone']})
+                    {'phone': session['phone']})
 
         rows = cur.fetchall()
 
@@ -92,7 +92,6 @@ def register(form):
 def add_box(form):
     mark_name = form.nb_mark_name.data
     cost = form.cost.data
-    #status = '0'
 
     con = lite.connect(DATABASE)
     with con:
@@ -107,9 +106,8 @@ def add_box(form):
     return True
 
 
-def close_box(form):
+def close_box(form): # переделать
     id_box = form.cb_box_code.data
-    #status = '2'
 
     con = lite.connect(DATABASE)
     with con:
@@ -119,7 +117,7 @@ def close_box(form):
                           {'id': id_box}).fetchone()[0]
 
         if cnt == 1:
-            cur.execute('''UPDATE Box SET Status = :status  WHERE ID_Box = :id''',
+            cur.execute("UPDATE Box SET Status = :status  WHERE ID_Box = :id",
                         {'id': id_box,
                          'status': CLOSED})
             return True
@@ -171,7 +169,7 @@ def delete_mark(mark_name):
 
 
 # RENT
-def rent_(form):
+def rent_(form): # переделать
     mark = form.mark_list.data
     date_end = datetime.strptime(form.date_end.data, '%d.%m.%Y')
     date_start = datetime.strptime(form.date_start.data, '%d.%m.%Y')
@@ -186,9 +184,9 @@ def rent_(form):
 
         id_box = cur.execute('''SELECT ID_Box, min(Price)
                                 FROM Box
-                                WHERE (Brand = :mark) and (Status = :opened)''',
+                                WHERE (Brand = :mark) and (Status = :status)''',
                              {'mark': mark,
-                              'opened': OPENED}).fetchone()[0]
+                              'status': OPENED}).fetchone()[0]
 
         cnt = cur.execute("SELECT COUNT(*) FROM Placed WHERE Car_Number = :n_auto",
                           {'n_auto': n_auto}).fetchone()[0]
@@ -203,8 +201,8 @@ def rent_(form):
                          'start': date_start,
                          'end': date_end})
 
-            cur.execute("UPDATE Box SET Status = :busy WHERE ID_Box = :id_box",
-                        {'busy': BUSY,
+            cur.execute("UPDATE Box SET Status = :status WHERE ID_Box = :id_box",
+                        {'status': BUSY,
                          'id_box': id_box})
 
             # Записываем новую машину в базу
@@ -226,15 +224,34 @@ def rent_(form):
     return False
 
 
-def refuse(phone, ticket_id):
+def refuse(phone, ticket_id): # переделать
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
-        # Проверить пользователя ли эта квитанция
-        # сделать все остальное
-        # ?????
-        # PROFIT
+        id_client = cur.execute("SELECT ID_client FROM Clients WHERE Phone = :phone",
+                                {'phone': phone}).fetchone()[0]
 
+        id_box, car_number = cur.execute("SELECT ID_Box, Car_Number FROM Placed WHERE Ticket_Number = :tn ",
+                                         {'tn': ticket_id}).fetchone()
+
+        # Принадлежит ли машина клиенту
+        cnt = cur.execute("SELECT COUNT(*) FROM Cars WHERE Car_Number = :car_number AND ID_client = :id_client",
+                          {'car_number': car_number,
+                           'id_client': id_client}).fetchone()[0]
+
+        # Также проверить в каком состоянии сейчас бокс, "занимаемый" машиной!
+
+        if cnt == 1:
+            cur.execute("DELETE FROM Placed WHERE Ticket_Number = :ticket_id",
+                        {'ticket_id': ticket_id})
+
+            cur.execute("UPDATE Box SET Status = :status WHERE ID_Box = :id_box",
+                        {'status': OPENED,
+                         'id_box': id_box})
+
+            return True
+
+    return False
 
 
 # ADMIN INFO
