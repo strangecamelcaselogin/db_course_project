@@ -1,18 +1,29 @@
-from wtforms import Form
-from wtforms import StringField, PasswordField, SelectField, IntegerField
-from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
+from datetime import datetime as dt
 
-from sql_core import form_mark_list
+from wtforms import Form
+from wtforms import StringField, PasswordField, SelectField
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
 
 
 Symbols = list('QWERTYUIOPASDFGHJKLZXCVBNM_ qwertyuiopasdfghjklzxcvbnm0123456789@')
 
 
-def password_validator(self, field):
+def password_validator(form, field):
     password = field.data
     for symbol in password:
         if symbol not in Symbols:
             raise ValidationError('Недопустимый символ')
+
+
+def datetime_validator(form, field):
+    now = dt.today()
+    try:
+        date = dt.strptime(field.data, '%d.%m.%Y')
+    except ValueError as e:
+        raise ValidationError('Неверный формат даты.')
+
+    if date < now:
+        raise ValidationError('Выпьем за вчера! (нет)')
 
 
 # REGISTER AND LOGIN
@@ -38,8 +49,8 @@ class RegistrationForm(Form):
 # RENT BOX AND REFUSE
 class RentForm(Form):  # DATETIME VALIDATORS
     mark_list = SelectField('Марка', choices=[])
-    date_start = StringField('Дата начала аренды', [DataRequired(), Length(min=1, max=32)], description="ДД.ММ.ГГГГ")
-    date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)], description="ДД.ММ.ГГГГ")
+    date_start = StringField('Дата начала аренды', [DataRequired(), datetime_validator], description="ДД.ММ.ГГГГ")
+    date_end = StringField('Дата окончания аренды', [DataRequired(), datetime_validator], description="ДД.ММ.ГГГГ")
     number_auto = StringField('Номер авто', [DataRequired(), Length(min=1, max=32)])
 
 

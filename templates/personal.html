@@ -2,25 +2,27 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
-	<h1>Личный кабинет</h1>
-    <div class="table-responsive">
-                    {% for t in ts %}
-                        <button class="btn btn-info" data-toggle="collapse" data-target="#hide-me{{t[0]}}" style="display: block;">Квитанция №{{t[0]}}</button>
-                         <div id="hide-me{{t[0]}}" class="collapse">
-                             <table  class="table table-bordered table-hover">
-                                 <tr>
-                                     <td>{{t[0]}}</td>
-                                     <td>{{t[1]}}</td>
-                                     <td>{{t[2]}}</td>
-                                     <td>{{t[3]}}</td>
-                                     <td>{{t[4]}}</td>
-                                     <td>{{t[5]}}</td>
-                                     <td> <button class="btn btn-danger" name="{{t[0]}}">Закрыть</button></td>
-                                 </tr>
-                             </table>
-                         </div>
-                    {% endfor %}
+    <form name="personal" role="form" method="post">
+        <h1>Личный кабинет</h1>
+        <div class="table-responsive">
+            <table  class="table table-bordered table-hover">
+                <caption>Квитанции</caption>
+                <tr>
+                    <th>Номер квианции</th>
+                    <th>Отказаться от аренды</th>
+                </tr>
+                {% for t in ts %}
+                    <tr>
+                        <td>{{t}}</td>
+                        <td><button type="submit" class="btn btn-success" name="ticket_id" value="{{ t }}"><image src="static/close.png" width="15" height="15"></image></button></td>
+                    </tr>
+                {% endfor %}
 
-    </div>
+            </table>
+
+        </div>
+
+    </form>
+
 </div>
 {% endblock %}

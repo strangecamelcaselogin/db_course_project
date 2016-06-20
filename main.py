@@ -82,6 +82,13 @@ def personal_area():
     ticket = form_ticket_list()
     print(ticket)
 
+    if request.method == 'POST':
+        ticket_id = int(request.form['ticket_id'])
+        phone = session['phone']
+
+        if refuse(phone, ticket_id):
+            pass
+
     return render_template('personal.html', ts=ticket)
 
 
@@ -121,17 +128,16 @@ def admin_info():
 @app.route('/admin_manage', methods=['GET', 'POST'])
 @admin_required
 def admin_manage():
-    marks_list = [(i, i) for i in form_mark_list().keys()]
 
     forms = dict()
     forms['NewBoxForm'] = NewBoxForm(request.form)
-    forms['NewBoxForm'].nb_mark_name.choices = marks_list
-
     forms['CloseBoxForm'] = CloseBoxForm(request.form)
     forms['UpdateBoxForm'] = UpdateBoxForm(request.form)
     forms['NewMarkForm'] = NewMarkForm(request.form)
-
     forms['DeleteMarkForm'] = DeleteMarkForm(request.form)
+
+    marks_list = [(i, i) for i in form_mark_list().keys()]
+    forms['NewBoxForm'].nb_mark_name.choices = marks_list
     forms['DeleteMarkForm'].dm_mark_name.choices = marks_list
 
     if request.method == 'POST':
