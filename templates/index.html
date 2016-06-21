@@ -10,8 +10,8 @@
     <div style="margin-bottom: 15px;">Мы обслуживаем следующие марки:</div>
     <div style="text-align: center;">
     {% for post in posts %}
-        <image src="static/brand/{{post}}.png" alt="{{post}}" class="brand_img"  data-toggle="modal" data-target="#myModal{{post}}"></image>
-        <div id="myModal{{post}}" class="modal fade">
+        <image src="static/brand/{{post[0]}}.png" alt="{{post}}" class="brand_img"  data-toggle="modal" data-target="#myModal{{post[0]}}"></image>
+        <div id="myModal{{post[0]}}" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
                 <div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button>

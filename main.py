@@ -45,11 +45,9 @@ def admin_required(f):
 def index():
     #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
     brands = get_mark_list()
-
-
-    box = {brand: get_list_box_mark(brand) for brand in brands}
+    print(brands)
+    box = {brand[0]: get_list_box_mark(brand[0]) for brand in brands}
     path = count_mark()
-    print(box)
     return render_template('index.html', x=42, posts=brands, box=box, path_img=path)
 
 

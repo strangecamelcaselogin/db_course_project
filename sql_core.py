@@ -44,7 +44,7 @@ def form_box_list():
     with con:
         cur = con.cursor()
 
-        rows = cur.execute("SELECT Box.ID_Box FROM Box WHERE (Box.Status = '1') ").fetchall()
+        rows = cur.execute("SELECT Box.ID_Box FROM Box, Placed WHERE (Box.ID_Box = Placed.ID_Box) AND (Placed.Busy = 'YES' ").fetchall()
 
         return {row[0]: row[0] for row in rows}
 
@@ -54,8 +54,9 @@ def get_list_box_mark(brand):  #получаем все боксы и их ст�
     with con:
         cur = con.cursor()
 
-        rows = cur.execute("SELECT Box.ID_Box, Box.Price FROM Box WHERE (Box.Brand = :brand) AND (Box.Status = '0') ",
-                                   {'brand': brand}).fetchall()
+        rows = cur.execute("SELECT Box.ID_Box, Box.Price FROM Box, Placed WHERE (Box.Brand = :brand) AND (Box.ID_Box = Placed.ID_Box) "
+                           "AND (Placed.Busy = 'NO') ",
+                            {'brand': brand}).fetchall()
 
         if (len(rows) != 0):
             return(rows)
@@ -147,7 +148,7 @@ def rent_box(date_start, date_end, number):
                 return True
 
             else:
-                return 'К сожалению у нас нет свободных боксов для вашей марки авто.'
+                return 'К сожалению, у нас нет свободных боксов для вашей марки авто.'
 
         else:
             return 'Для вашей машины уже зарезервирован бокс'
