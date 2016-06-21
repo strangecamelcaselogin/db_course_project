@@ -4,20 +4,11 @@ from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
-from sql_core import login, register, add_box, close_box, add_mark, form_mark_list, delete_mark, rent_, refuse, update_box, \
-    get_list_cwm, get_list_cde, form_ticket_list, get_list_c, get_name_client, get_client, get_list_box_mark, form_box_list, \
-    count_mark
+from sql_core import *
 
-from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
-    NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm, UpdateBoxForm, ClientMarkInfo, DateEndInfo, BoxList
+from forms import *
 
 import xlrd, xlwt
-
-
-import matplotlib.pyplot as plt
-
-from settings import *
-
 
 app = Flask(__name__)
 
@@ -53,7 +44,7 @@ def admin_required(f):
 @app.route('/index')
 def index():
     #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
-    brands = form_mark_list()
+    brands = get_mark_list()
 
 
     box = {brand: get_list_box_mark(brand) for brand in brands}
@@ -67,18 +58,24 @@ def index():
 @login_required
 def rent():
     form = RentForm(request.form)
-    form.mark_list.choices = [(i, i) for i in form_mark_list().keys()]
+    form.number_auto.choices = get_client_cars()
 
     if request.method == 'POST':
         if form.validate():
             try:
-                if rent_(form):
+                date_start = datetime.strptime(form.date_start.data, '%d.%m.%Y').date()
+                date_end = datetime.strptime(form.date_end.data, '%d.%m.%Y').date()
+                number = form.number_auto.data
+
+                t = rent_box(date_start, date_end, number
+                             )
+                if t == True:
                     flash('Вы арендовали бокс')
                     return redirect('/personal')
 
                 else:
-                    flash('К сожалению, на данный момент свободных боксов нет (не факт)')
-                    return redirect('/index')
+                    flash(t)
+                    return redirect('/rent')
 
             except Exception as e:
                 flash('Возникла ошибка: {}'.format(e))
@@ -90,34 +87,28 @@ def rent():
 @app.route('/personal', methods=['GET', 'POST'])
 @login_required
 def personal_area():
-    ticket = form_ticket_list()
-    client = get_name_client()
-    print(ticket)
-
+    tickets = get_tickets_list()
+    client = get_client_name()
 
     if request.method == 'POST':
-        ticket_id = int(request.form['ticket_id'])
         phone = session['phone']
+        ticket_id = int(request.form['ticket_id'])
 
-        if refuse(phone, ticket_id):
-            print('thats ok')
-        else:
-            print('thats bad')
+        refuse_box(phone, ticket_id)
 
         return redirect('/personal')
 
-    return render_template('personal.html', ts=ticket, client=client)
+    return render_template('personal.html', tickets=tickets, client=client)
 
 
 # ADMIN STUFF
 @app.route('/admin_info', methods=['GET', 'POST'])  # не работает :/
 @admin_required
 def admin_info():
-    forms = dict()
-    forms['ClientMarkInfo'] = ClientMarkInfo(request.form)
-    forms['ClientMarkInfo'].mark_name.choices = [(i, i) for i in form_mark_list().keys()]
+    forms = {'ClientMarkInfo': ClientMarkInfo(request.form),
+             'DateEndInfo': DateEndInfo(request.form)}
 
-    forms['DateEndInfo'] = DateEndInfo(request.form)
+    forms['ClientMarkInfo'].mark_name.choices = get_mark_list()
 
     forms['BoxList'] = BoxList(request.form)
     forms['BoxList'].box_clients.choices = [(i, i) for i in form_box_list().keys()]
@@ -140,14 +131,14 @@ def admin_info():
         if 'get_list_cwm' in request.form:
             f = forms['ClientMarkInfo']
             if f.validate():
-                info_cwm = get_list_cwm(f)
+                info_cwm = get_list_cwm(f.mark_name.data)
 
                 return render_template('admin_info.html', f=forms, infs_cwm=info_cwm)
 
         elif 'get_list_cde' in request.form:
             f = forms['DateEndInfo']
             if f.validate():
-                info_cde = get_list_cde(f)
+                info_cde = get_list_cde(f.date_end.data) # ???
 
                 return render_template('admin_info.html', f=forms, infs_cde=info_cde)
 
@@ -164,15 +155,13 @@ def admin_info():
 @app.route('/admin_manage', methods=['GET', 'POST'])
 @admin_required
 def admin_manage():
+    forms = {'NewBoxForm': NewBoxForm(request.form),
+             'CloseBoxForm': CloseBoxForm(request.form),
+             'UpdateBoxForm': UpdateBoxForm(request.form),
+             'NewMarkForm': NewMarkForm(request.form),
+             'DeleteMarkForm': DeleteMarkForm(request.form)}
 
-    forms = dict()
-    forms['NewBoxForm'] = NewBoxForm(request.form)
-    forms['CloseBoxForm'] = CloseBoxForm(request.form)
-    forms['UpdateBoxForm'] = UpdateBoxForm(request.form)
-    forms['NewMarkForm'] = NewMarkForm(request.form)
-    forms['DeleteMarkForm'] = DeleteMarkForm(request.form)
-
-    marks_list = [(i, i) for i in form_mark_list().keys()]
+    marks_list = get_mark_list()
     forms['NewBoxForm'].nb_mark_name.choices = marks_list
     forms['DeleteMarkForm'].dm_mark_name.choices = marks_list
 
@@ -180,7 +169,7 @@ def admin_manage():
         if 'new_box' in request.form:
             f = forms['NewBoxForm']
             if f.validate():
-                if add_box(f):
+                if add_box(f.nb_mark_name.data, f.cost.data):
                     flash('Новый бокс добавлен')
                     return redirect('/admin_manage')
 
@@ -190,7 +179,7 @@ def admin_manage():
         elif 'close_box' in request.form:
             f = forms['CloseBoxForm']
             if f.validate():
-                if close_box(f):
+                if close_box(f.cb_box_code.data):
                     flash('Бокс закрыт')
                     return redirect('/admin_manage')
 
@@ -201,7 +190,7 @@ def admin_manage():
             f = forms['UpdateBoxForm']
 
             if f.validate():
-                if update_box(f):
+                if update_box(float(f.u_cost.data.replace(',', '.'))):
                     flash('Маша не может в буковы')
                     return redirect('/admin_manage')
 
@@ -245,7 +234,7 @@ def login_():
         if form.validate():
 
             if login(form):
-                flash('Вы вошли как {}'.format(form.phone.data))
+                flash('Вы вошли как {} (имечко бы надо)'.format(form.phone.data))
                 return redirect('/index')
 
             else:
