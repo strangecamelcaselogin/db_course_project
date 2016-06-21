@@ -5,10 +5,16 @@ from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
 from sql_core import login, register, add_box, close_box, add_mark, form_mark_list, delete_mark, rent_, refuse, update_box, \
-    get_list_cwm, get_list_cde, form_ticket_list, get_list_c, get_name_client
+    get_list_cwm, get_list_cde, form_ticket_list, get_list_c, get_name_client, get_client, get_list_box_mark, form_box_list, \
+    count_mark
 
 from forms import LoginForm, RegistrationForm, RentForm, RefuseForm, AdminInfo, \
-    NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm, UpdateBoxForm, ClientMarkInfo, DateEndInfo
+    NewBoxForm, CloseBoxForm, NewMarkForm, DeleteMarkForm, UpdateBoxForm, ClientMarkInfo, DateEndInfo, BoxList
+
+import xlrd, xlwt
+
+
+import matplotlib.pyplot as plt
 
 from settings import *
 
@@ -47,8 +53,13 @@ def admin_required(f):
 @app.route('/index')
 def index():
     #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
-    posts = form_mark_list()
-    return render_template('index.html', x=42, posts=posts)
+    brands = form_mark_list()
+
+
+    box = {brand: get_list_box_mark(brand) for brand in brands}
+    path = count_mark()
+    print(box)
+    return render_template('index.html', x=42, posts=brands, box=box, path_img=path)
 
 
 # RENT BOX
@@ -108,9 +119,21 @@ def admin_info():
 
     forms['DateEndInfo'] = DateEndInfo(request.form)
 
+    forms['BoxList'] = BoxList(request.form)
+    forms['BoxList'].box_clients.choices = [(i, i) for i in form_box_list().keys()]
+
     if request.method == 'POST':
         if 'get_list_c' in request.form:
             info_c = get_list_c()
+
+            wb = xlwt.Workbook()
+            ws = wb.add_sheet('Test')
+            for i in range(len(info_c)):
+                for j in range(len(info_c[i])):
+                    ws.write(i, j, info_c[i][j])
+            wb.save('report/client.xls')
+
+
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
@@ -127,6 +150,13 @@ def admin_info():
                 info_cde = get_list_cde(f)
 
                 return render_template('admin_info.html', f=forms, infs_cde=info_cde)
+
+        if 'get_client' in request.form: #получить владельца указанного бокса
+            f = forms['BoxList']
+            if f.validate():
+                info_box = get_client(f)
+
+                return render_template('admin_info.html', f=forms, infs_box=info_box)
 
     return render_template('admin_info.html', f=forms)
 

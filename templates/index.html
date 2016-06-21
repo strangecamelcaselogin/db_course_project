@@ -5,13 +5,46 @@
 <div class="container-fluid" style="padding: 15px;">
 	<h1 style="text-align: center;">Добро пожаловать</h1>
 
-	<div>Наша фирма предоставляет услуги предоставления парковки</div>
+	<div>Наша фирма предоставляет услуги аренды гражаных боксов</div>
 
     <div style="margin-bottom: 15px;">Мы обслуживаем следующие марки:</div>
     <div style="text-align: center;">
     {% for post in posts %}
-            <image src="static/brand/{{post}}.png" alt="{{post}}" class="brand_img"></image>
+        <image src="static/brand/{{post}}.png" alt="{{post}}" class="brand_img"  data-toggle="modal" data-target="#myModal{{post}}"></image>
+        <div id="myModal{{post}}" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button>
+                <h4 class="modal-title">Боксы</h4>
+                </div>
+
+                <div class="modal-body">
+                     {% if (box[post]) %}
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Номер бокса</th>
+                                <th>Цена</th>
+                            </tr>
+                        {% for b in box[post] %}
+                                <tr>
+                                    <td>{{b[0]}}</td>
+                                    <td>{{b[1]}}</td>
+                                </tr>
+                        {% endfor %}
+                        </table>
+                     {%else%}
+                        <p>К сожалению, для данной марки свободных боксов нет</p>
+                    {% endif %}
+                </div>
+                <div class="modal-footer"><button class="btn btn-default" type="button" data-dismiss="modal">Закрыть</button></div>
+                </div>
+            </div>
+        </div>
     {% endfor %}
     </div>
+    <hr>
+    <h2 align="center">Выбор наших клиентов!</h2>
+    <div style="text-align: center;"><image src="{{path_img}}" width="600px" height="450px" ></image></div>
+
 </div>
 {% endblock %}
