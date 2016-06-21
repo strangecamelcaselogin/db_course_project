@@ -1,4 +1,4 @@
-from datetime import datetime as dt
+from datetime import date, datetime
 
 from wtforms import Form
 from wtforms import StringField, PasswordField, SelectField
@@ -16,13 +16,13 @@ def password_validator(form, field):
 
 
 def datetime_validator(form, field):
-    now = dt.today()
+    now = date.today()
     try:
-        date = dt.strptime(field.data, '%d.%m.%Y')
+        field_date = datetime.strptime(field.data, '%d.%m.%Y').date()
     except ValueError as e:
         raise ValidationError('Неверный формат даты.')
 
-    if date < now:
+    if field_date < now:
         raise ValidationError('Выпьем за вчера! (нет)')
 
 
@@ -48,19 +48,10 @@ class RegistrationForm(Form):
 
 # RENT BOX AND REFUSE
 class RentForm(Form):  # DATETIME VALIDATORS
-    mark_list = SelectField('Марка', choices=[])
     date_start = StringField('Дата начала аренды', [DataRequired(), datetime_validator], description="ДД.ММ.ГГГГ")
     date_end = StringField('Дата окончания аренды', [DataRequired(), datetime_validator], description="ДД.ММ.ГГГГ")
-    number_auto = StringField('Номер авто', [DataRequired(), Length(min=1, max=32)])
-
-
-class RefuseForm(Form):  # отказаться от бокса ???
-    cod_receipt = StringField('Номер квитанции', [DataRequired(), Length(min=1, max=32)])
-
-
-# PERSONAL (BDSM)
-class PersonalForm(Form):  # Личный кабинет
-    pass
+    number_auto = SelectField('Автомобиль', choices=[],
+                              description='Выберите автомобиль, для которого вы хотите арендовать бокс.')
 
 
 # ADMIN MANAGE

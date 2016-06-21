@@ -7,47 +7,293 @@ from flask import session
 from settings import *
 
 
-def form_mark_list():
+# ANY
+def get_mark_list():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
         rows = cur.execute("SELECT Car_Brands.Brand FROM Car_Brands").fetchall()
 
-        return {row[0]: row[0] for row in rows}
+        return [(row[0], row[0]) for row in rows]
 
 
-def form_ticket_list():
+def get_tickets_list():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
         cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start, Placed.Rent_End
-                        FROM Box, Placed, Cars, Clients
+                       FROM Box, Placed, Cars, Clients
                        WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
                        AND (Clients.Phone = :phone) AND (Box.ID_Box = Placed.ID_Box)''',
-                        {'phone': session['phone']})
+                    {'phone': session['phone']})
 
         rows = cur.fetchall()
 
-    #return {row[0]: row[0] for row in rows}
-    return (rows)
+        print(rows)
+
+    return reversed(rows)
 
 
-def get_name_client():
+def get_client_name():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
         cur.execute('''SELECT Clients.First_Name, Clients.Second_Name
-                        FROM  Clients
+                       FROM  Clients
                        WHERE Clients.Phone = :phone''',
-                        {'phone': session['phone']})
+                    {'phone': session['phone']})
 
-        rows = cur.fetchone()
+        full_name = cur.fetchone()
 
-    #return {row[0]: row[0] for row in rows}
-    return (rows)
+    return full_name
+
+
+def get_client_cars():
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        client_cars = cur.execute('''SELECT Car_Number
+                                     FROM Cars
+                                     WHERE ID_client = (SELECT ID_client
+                                                        FROM Clients
+                                                        WHERE Phone = :phone)''',
+                                  {'phone': session['phone']}).fetchall()
+
+    return [(row[0], row[0]) for row in client_cars]
+
+
+# CLIENT
+def rent_box(date_start, date_end, number):
+    if date_end <= date_start:
+        return 'Дата окончания аренды не может быть раньше начала.'
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        mark = cur.execute("SELECT Brand FROM Cars WHERE Car_Number = :number",
+                           {'number': number}).fetchone()[0]
+
+        # Занимает ли эта машина бокс прямо сейчас
+        cnt = cur.execute('''SELECT COUNT(*)
+                             FROM Placed
+                             WHERE Car_Number = :number AND Busy = "YES"''',
+                          {'number': number}).fetchone()[0]
+
+        if cnt == 0:
+            id_box = cur.execute('''SELECT ID_Box, min(Price)
+                                    FROM Box
+                                    WHERE Brand = :mark
+                                    AND ID_Box NOT IN (SELECT ID_Box
+                                                       FROM Placed
+                                                       WHERE Busy = "YES")''',
+                                 {'mark': mark}).fetchone()[0]
+
+            if id_box is not None:
+                cur.execute('''INSERT INTO Placed (ID_Box, Car_Number, Rent_Start, Rent_End, Paid, Busy)
+                               VALUES (:id_box, :n_auto, :start, :end, "NO", "YES")''',
+                            {'id_box': id_box,
+                             'n_auto': number,
+                             'start': date_start,
+                             'end': date_end})
+
+                return True
+
+            else:
+                return 'К сожалению у нас нет свободных боксов для вашей марки авто.'
+
+        else:
+            return 'Для вашей машины уже зарезервирован бокс'
+
+
+def refuse_box(phone, ticket_id):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        id_client = cur.execute("SELECT ID_client FROM Clients WHERE Phone = :phone",
+                                {'phone': phone}).fetchone()[0]
+
+        cur.execute('''UPDATE Placed SET Busy = "NO"
+                       WHERE :id_client = (SELECT ID_Client
+                                           FROM Cars
+                                           WHERE Car_Number = Placed.Car_Number)
+                       AND Ticket_Number = :ticket_id''',
+                    {'id_client': id_client,
+                     'ticket_id': ticket_id})
+
+    return True
+
+
+def add_car(mark, number):
+    #mark = form.mark_list.data
+    #number = form.number_auto.data
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cnt = cur.execute("SELECT COUNT(*) FROM Cars WHERE Car_Number = :n_auto",
+                          {'n_auto': number}).fetchone()[0]
+
+        if cnt == 0:
+            id_client = cur.execute("SELECT ID_Client FROM Clients WHERE Phone = :phone",
+                                 {'phone': session['phone']}).fetchone()[0]
+
+            # Записываем новую машину в базу
+            cur.execute('''INSERT INTO Cars (Car_Number, ID_client, Brand)
+                           VALUES (:number, :id_client, :mark)''',
+                        {'number': number,
+                         'id_client': id_client,
+                         'mark': mark})
+
+            return True
+
+        else:
+            return 'Такая машина уже зарегистрирована.'
+
+
+def delete_car(number):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cnt = cur.execute("SELECT COUNT(*) FROM Cars WHERE Car_Number = :n_auto",
+                          {'n_auto': number}).fetchone()[0]
+
+        if cnt == 1:
+            id_client = cur.execute("SELECT ID_Client FROM Clients WHERE Phone = :phone",
+                                {'phone': session['phone']}).fetchone()[0]
+
+            cur.execute("DELETE FROM Cars WHERE Car_Number = :number AND ID_client = :id_client",
+                    {'number': number,
+                     'id_client': id_client})
+
+            return True
+
+    return False
+
+
+# ADMIN MANAGE
+def add_box(mark_name, cost):
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute('''INSERT INTO Box (Brand, Price)
+                       VALUES (:mark, :cost)''',
+                    {'mark': mark_name,
+                     'cost': cost})
+
+    return True
+
+
+def close_box(id_box):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cnt = cur.execute("SELECT COUNT(*) FROM Box WHERE ID_Box = :id",
+                          {'id': id_box}).fetchone()[0]
+
+        if cnt == 1:
+            cur.execute("DELETE FROM Box WHERE ID_Box = :id",
+                        {'id': id_box})
+
+            return True
+
+    return False
+
+
+def update_box(n):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+        cur.execute("UPDATE Box SET Price = Price * :n", {'n': n})
+
+    return True
+
+
+def add_mark(mark_name):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cnt = cur.execute("SELECT COUNT(*) FROM Car_Brands WHERE Brand = :mark",
+                          {'mark': mark_name}).fetchone()[0]
+
+        if cnt == 0:
+            cur.execute('''INSERT INTO Car_Brands (Brand) VALUES (:mark)''',
+                        {'mark': mark_name})
+            return True
+
+    return False
+
+
+def delete_mark(mark_name):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cnt = cur.execute("SELECT COUNT(*) FROM Car_Brands WHERE Brand = :mark",
+                          {'mark': mark_name}).fetchone()[0]
+
+        if cnt == 1:
+            cur.execute("DELETE FROM Car_Brands WHERE Brand = :mark",
+                        {'mark': mark_name})
+            return True
+
+    return False
+
+
+# ADMIN INFO
+def get_list_c():
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        info = cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name,
+                              Clients.Second_Name, Clients.Address
+                              FROM Clients''').fetchall()
+
+    return info
+
+
+def get_list_cwm(mark_name):
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name, Clients.Second_Name
+                       FROM Clients, Cars
+                       WHERE (Cars.Brand = :mark_name) and (Clients.ID_client = Cars.ID_client)''',
+                    {'mark_name': mark_name})
+
+        info = cur.fetchall()
+
+    return info
+
+
+def get_list_cde(date): # ???
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name, Clients.Second_Name
+                       FROM Clients, Cars, Placed
+                       WHERE (Placed.Rent_End = :date) AND (Placed.Car_Number = Cars.Car_Number)
+                       AND (Clients.ID_client = Cars.ID_client)''',
+                    {'date': date})
+
+        info = cur.fetchall()
+
+    return info
+
 
 # LOGIN ADN REGISTER
 def login(form):
@@ -102,218 +348,3 @@ def register(form):
             return True
 
     return False
-
-
-# ADMIN MANAGE
-
-def add_box(form):
-    mark_name = form.nb_mark_name.data
-    cost = form.cost.data
-
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        cur.execute('''INSERT INTO Box (Brand, Price, Status)
-                       VALUES (:mark, :cost, :status)''',
-                    {'mark': mark_name,
-                     'cost': cost,
-                     'status': OPENED})
-
-    return True
-
-
-def close_box(form): # переделать
-    id_box = form.cb_box_code.data
-
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        cnt = cur.execute("SELECT COUNT(*) FROM Box WHERE ID_Box = :id",
-                          {'id': id_box}).fetchone()[0]
-
-        if cnt == 1:
-            cur.execute("DELETE FROM Box WHERE ID_Box = :id",
-                        {'id': id_box})
-
-            return True
-
-    return False
-
-
-def update_box(form):
-    n = float(form.u_cost.data.replace(',', '.'))
-
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-        cur.execute("UPDATE Box SET Price = Price * :n", {'n': n})
-
-    return True
-
-
-def add_mark(mark_name):
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        cnt = cur.execute("SELECT COUNT(*) FROM Car_Brands WHERE Brand = :mark",
-                          {'mark': mark_name}).fetchone()[0]
-
-        if cnt == 0:
-            cur.execute('''INSERT INTO Car_Brands (Brand) VALUES (:mark)''',
-                        {'mark': mark_name})
-            return True
-
-    return False
-
-
-def delete_mark(mark_name):
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        cnt = cur.execute("SELECT COUNT(*) FROM Car_Brands WHERE Brand = :mark",
-                          {'mark': mark_name}).fetchone()[0]
-
-        if cnt == 1:
-            cur.execute("DELETE FROM Car_Brands WHERE Brand = :mark",
-                        {'mark': mark_name})
-            return True
-
-    return False
-
-
-# RENT
-def rent_(form): # переделать
-    mark = form.mark_list.data
-    date_end = datetime.strptime(form.date_end.data, '%d.%m.%Y')
-    date_start = datetime.strptime(form.date_start.data, '%d.%m.%Y')
-    n_auto = form.number_auto.data
-
-    if date_end <= date_start:
-        raise Exception('Дата окончания аренды раньше даты начала.')
-
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        id_box = cur.execute('''SELECT ID_Box, min(Price)
-                                FROM Box
-                                WHERE (Brand = :mark) and (Status = :status)''',
-                             {'mark': mark,
-                              'status': OPENED}).fetchone()[0]
-
-        cnt = cur.execute("SELECT COUNT(*) FROM Placed WHERE Car_Number = :n_auto",
-                          {'n_auto': n_auto}).fetchone()[0]
-
-        # Если нашли бокс
-        # и автомобиль с этим номером не занимает никакой другой бокс
-        if (id_box is not None) and (cnt == 0):
-            cur.execute('''INSERT INTO Placed (ID_Box, Car_Number, Rent_Start, Rent_End)
-                           VALUES (:id_box, :n_auto, :start, :end)''',
-                        {'id_box': id_box,
-                         'n_auto': n_auto,
-                         'start': date_start,
-                         'end': date_end})
-
-            cur.execute("UPDATE Box SET Status = :status WHERE ID_Box = :id_box",
-                        {'status': BUSY,
-                         'id_box': id_box})
-
-            # Записываем новую машину в базу
-            cnt = cur.execute("SELECT COUNT(*) FROM Cars WHERE Car_Number = :n_auto",
-                              {'n_auto': n_auto}).fetchone()[0]
-
-            if cnt == 0:
-                client = cur.execute("SELECT ID_Client FROM Clients WHERE Phone = :phone",
-                                     {'phone': session['phone']}).fetchone()
-
-                cur.execute('''INSERT INTO Cars (Car_Number, ID_client, Brand)
-                               VALUES (:n_auto, :id_client, :mark)''',
-                            {'n_auto': n_auto,
-                             'id_client': client[0],
-                             'mark': mark})
-
-            return True
-
-    return False
-
-
-def refuse(phone, ticket_id): # переделать
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-        id_client = cur.execute("SELECT ID_client FROM Clients WHERE Phone = :phone",
-                                {'phone': phone}).fetchone()[0]
-
-        id_box, car_number = cur.execute("SELECT ID_Box, Car_Number FROM Placed WHERE Ticket_Number = :tn ",
-                                         {'tn': ticket_id}).fetchone()
-
-        # Принадлежит ли машина клиенту
-        cnt = cur.execute("SELECT COUNT(*) FROM Cars WHERE Car_Number = :car_number AND ID_client = :id_client",
-                          {'car_number': car_number,
-                           'id_client': id_client}).fetchone()[0]
-
-        # Также проверить в каком состоянии сейчас бокс, "занимаемый" машиной!
-
-        if cnt == 1:
-            cur.execute("DELETE FROM Placed WHERE Ticket_Number = :ticket_id",
-                        {'ticket_id': ticket_id})
-
-            cur.execute("UPDATE Box SET Status = :status WHERE ID_Box = :id_box",
-                        {'status': OPENED,
-                         'id_box': id_box})
-
-            return True
-
-    return False
-
-
-# ADMIN INFO
-def get_list_cwm(form):
-    mark_name = form.mark_name.data
-
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name, Clients.Second_Name
-                       FROM Clients, Cars
-                       WHERE (Cars.Brand = :mark_name) and (Clients.ID_client = Cars.ID_client)''',
-                    {'mark_name': mark_name})
-
-        info = cur.fetchall()
-
-    return info
-
-
-def get_list_cde(form):
-    date = form.date_end.data
-
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name, Clients.Second_Name
-                       FROM Clients, Cars, Placed
-                       WHERE (Placed.Rent_End = :date) AND (Placed.Car_Number = Cars.Car_Number)
-                       AND (Clients.ID_client = Cars.ID_client)''',
-                    {'date': date})
-
-        info = cur.fetchall()
-
-    return info
-
-
-def get_list_c():
-    con = lite.connect(DATABASE)
-    with con:
-        cur = con.cursor()
-
-        info = cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name,
-                                Clients.Second_Name, Clients.Address
-                              FROM Clients''').fetchall()
-
-    return info

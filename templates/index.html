@@ -10,7 +10,7 @@
     <div style="margin-bottom: 15px;">Мы обслуживаем следующие марки:</div>
     <div style="text-align: center;">
     {% for post in posts %}
-            <image src="static/brand/{{post}}.png" alt="{{post}}" class="brand_img"></image>
+            <image src="static/brand/{{post[0]}}.png" alt="{{post[0]}}" class="brand_img"></image>
     {% endfor %}
     </div>
 </div>
