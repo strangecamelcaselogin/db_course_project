@@ -70,7 +70,8 @@ def get_tickets_list():
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start, Placed.Rent_End
+        cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start,
+                        Placed.Rent_End, Placed.Busy
                        FROM Box, Placed, Cars, Clients
                        WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
                        AND (Clients.Phone = :phone) AND (Box.ID_Box = Placed.ID_Box)''',

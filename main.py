@@ -90,6 +90,15 @@ def personal_area():
     tickets = get_tickets_list()
     client = get_client_name()
 
+    ticket_active = ()
+    ticket_not_active = ()
+    for ticket in tickets:
+        if ticket[6] == 'YES':
+            ticket_active += (ticket,)
+        else:
+            ticket_not_active += (ticket, )
+
+    print(ticket_not_active)
     if request.method == 'POST':
         phone = session['phone']
         ticket_id = int(request.form['ticket_id'])
@@ -98,7 +107,7 @@ def personal_area():
 
         return redirect('/personal')
 
-    return render_template('personal.html', tickets=tickets, client=client)
+    return render_template('personal.html', tickets_active=ticket_active, tickets_not_active=ticket_not_active, client=client)
 
 
 # ADMIN STUFF
