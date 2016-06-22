@@ -87,7 +87,7 @@ def rent():
 @app.route('/personal', methods=['GET', 'POST'])
 @login_required
 def personal_area():
-    tickets = get_ticket_list()
+    tickets = get_tickets_list()
     client = get_client_name()
 
     ticket_active = ()

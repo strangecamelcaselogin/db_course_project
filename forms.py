@@ -100,5 +100,5 @@ class DateEndInfo(Form):
 
 class BoxList(Form):
     box_clients = SelectField('Номера занятых боксов', choices=[],
-                              description="Получить список с указанной маркой", coerce=int)
+                              description="Получить список с указанным боксом", coerce=int)
 
