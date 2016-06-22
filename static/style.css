@@ -71,6 +71,7 @@ ul
 }
 .brand_img
 {
+ cursor: pointer;
  margin: 10px;
  padding: 6px;
  height: 150px;

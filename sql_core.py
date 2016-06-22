@@ -4,6 +4,8 @@ import sqlite3 as lite
 
 from flask import session
 
+from pylab import *
+
 from settings import *
 
 
@@ -18,7 +20,49 @@ def get_mark_list():
         return [(row[0], row[0]) for row in rows]
 
 
-def get_tickets_list():
+def count_mark():
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        rows = cur.execute("SELECT Brand, COUNT(Brand) AS Count_brand FROM Cars GROUP BY Brand").fetchall()
+
+        labels = []
+        sizes = []
+        for row in rows:
+            labels.append(row[0])
+            sizes.append(row[1])
+
+        pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+        savefig('static/pie_brand.png')
+
+        return('static/pie_brand.png')
+
+
+def form_box_list():
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        rows = cur.execute("SELECT Box.ID_Box FROM Box, Placed WHERE (Box.ID_Box = Placed.ID_Box) AND (Placed.Busy = 'YES' ").fetchall()
+
+        return {row[0]: row[0] for row in rows}
+
+
+def get_list_box_mark(brand):  #получаем все боксы и их стоимости для одной марки
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        rows = cur.execute("SELECT Box.ID_Box, Box.Price FROM Box, Placed WHERE (Box.Brand = :brand) AND (Box.ID_Box = Placed.ID_Box) "
+                           "AND (Placed.Busy = 'NO') ",
+                            {'brand': brand}).fetchall()
+
+        if (len(rows) != 0):
+            return(rows)
+
+
+def get_ticket_list():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
@@ -104,7 +148,7 @@ def rent_box(date_start, date_end, number):
                 return True
 
             else:
-                return 'К сожалению у нас нет свободных боксов для вашей марки авто.'
+                return 'К сожалению, у нас нет свободных боксов для вашей марки авто.'
 
         else:
             return 'Для вашей машины уже зарезервирован бокс'
@@ -294,6 +338,23 @@ def get_list_cde(date): # ???
 
     return info
 
+def get_client(form):
+    box_number = form.box_clients.data
+
+
+    con = lite.connect(DATABASE)
+    with con:
+        cur = con.cursor()
+
+        cur.execute('''SELECT Clients.First_Name, Clients.Second_Name, Clients.Middle_Name,
+                                Clients.Address, Clients.Phone,
+                            FROM  Clients
+                            WHERE (Placed.ID_Box = :box_number) and (Placed.Car_Number = Cars.Car_Number)
+                            and (Cars.ID_client = Clients.ID_Client)''',
+                            {'box_number': box_number})
+        info = cur.fetchall()
+    return info
+
 
 # LOGIN ADN REGISTER
 def login(form):
@@ -348,3 +409,4 @@ def register(form):
             return True
 
     return False
+

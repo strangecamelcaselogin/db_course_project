@@ -8,6 +8,7 @@ from sql_core import *
 
 from forms import *
 
+import xlrd, xlwt
 
 app = Flask(__name__)
 
@@ -42,8 +43,12 @@ def admin_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
-    posts = get_mark_list() # ???
-    return render_template('index.html', x=42, posts=posts)
+    #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
+    brands = get_mark_list()
+    print(brands)
+    box = {brand[0]: get_list_box_mark(brand[0]) for brand in brands}
+    path = count_mark()
+    return render_template('index.html', x=42, posts=brands, box=box, path_img=path)
 
 
 # RENT BOX
@@ -103,9 +108,21 @@ def admin_info():
 
     forms['ClientMarkInfo'].mark_name.choices = get_mark_list()
 
+    forms['BoxList'] = BoxList(request.form)
+    forms['BoxList'].box_clients.choices = [(i, i) for i in form_box_list().keys()]
+
     if request.method == 'POST':
         if 'get_list_c' in request.form:
             info_c = get_list_c()
+
+            wb = xlwt.Workbook()
+            ws = wb.add_sheet('Test')
+            for i in range(len(info_c)):
+                for j in range(len(info_c[i])):
+                    ws.write(i, j, info_c[i][j])
+            wb.save('report/client.xls')
+
+
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
@@ -122,6 +139,13 @@ def admin_info():
                 info_cde = get_list_cde(f.date_end.data) # ???
 
                 return render_template('admin_info.html', f=forms, infs_cde=info_cde)
+
+        if 'get_client' in request.form: #получить владельца указанного бокса
+            f = forms['BoxList']
+            if f.validate():
+                info_box = get_client(f)
+
+                return render_template('admin_info.html', f=forms, infs_box=info_box)
 
     return render_template('admin_info.html', f=forms)
 
