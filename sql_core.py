@@ -20,7 +20,7 @@ def get_mark_list():
         return [(row[0], row[0]) for row in rows]
 
 
-def count_mark():
+def get_marks_statistic():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
@@ -34,19 +34,22 @@ def count_mark():
             sizes.append(row[1])
 
         pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
-        savefig('static/pie_brand.png')
+        savefig('/static/pie_brand.png')
 
-        return('static/pie_brand.png')
+        return '/static/pie_brand.png'
 
 
-def form_box_list():
+def get_box_list():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
-        rows = cur.execute("SELECT Box.ID_Box FROM Box, Placed WHERE (Box.ID_Box = Placed.ID_Box) AND (Placed.Busy = 'YES' ").fetchall()
+        rows = cur.execute('''SELECT Box.ID_Box
+                              FROM Box, Placed
+                              WHERE (Box.ID_Box = Placed.ID_Box)
+                              AND (Placed.Busy = "YES")''').fetchall()
 
-        return {row[0]: row[0] for row in rows}
+        return [(row[0], row[0]) for row in rows]
 
 
 def get_list_box_mark(brand):  #получаем все боксы и их стоимости для одной марки
@@ -62,7 +65,7 @@ def get_list_box_mark(brand):  #получаем все боксы и их ст�
             return(rows)
 
 
-def get_ticket_list():
+def get_tickets_list():
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
@@ -215,8 +218,8 @@ def delete_car(number):
                                 {'phone': session['phone']}).fetchone()[0]
 
             cur.execute("DELETE FROM Cars WHERE Car_Number = :number AND ID_client = :id_client",
-                    {'number': number,
-                     'id_client': id_client})
+                        {'number': number,
+                         'id_client': id_client})
 
             return True
 
@@ -339,20 +342,19 @@ def get_list_cde(date): # ???
 
     return info
 
-def get_client(form):
-    box_number = form.box_clients.data
 
+def get_client(box_number):
 
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Clients.First_Name, Clients.Second_Name, Clients.Middle_Name,
-                                Clients.Address, Clients.Phone,
-                            FROM  Clients
-                            WHERE (Placed.ID_Box = :box_number) and (Placed.Car_Number = Cars.Car_Number)
-                            and (Cars.ID_client = Clients.ID_Client)''',
-                            {'box_number': box_number})
+        cur.execute('''SELECT Clients.First_Name, Clients.Second_Name, Clients.Middle_Name, Clients.Address, Clients.Phone
+                       FROM  Clients, Placed, Cars
+                       WHERE (Placed.ID_Box = :box_number) AND (Placed.Car_Number = Cars.Car_Number)
+                       AND (Cars.ID_client = Clients.ID_Client)''',
+                    {'box_number': box_number})
+
         info = cur.fetchall()
     return info
 

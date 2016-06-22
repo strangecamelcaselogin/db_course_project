@@ -97,7 +97,8 @@ class ClientMarkInfo(Form):
 class DateEndInfo(Form):
     date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)])
 
+
 class BoxList(Form):
     box_clients = SelectField('Номера занятых боксов', choices=[],
-                            description="Получить список с указанной маркой")
+                              description="Получить список с указанной маркой", coerce=int)
 
