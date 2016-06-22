@@ -46,9 +46,11 @@ def index():
     #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
     brands = get_mark_list()
     print(brands)
+
     box = {brand[0]: get_list_box_mark(brand[0]) for brand in brands}
-    path = count_mark()
-    return render_template('index.html', x=42, posts=brands, box=box, path_img=path)
+    #path = count_mark()
+    #print(path)
+    return render_template('index.html', x=42, posts=brands, box=box, path_img='static/pie_brand.png')
 
 
 # RENT BOX
@@ -104,12 +106,11 @@ def personal_area():
 @admin_required
 def admin_info():
     forms = {'ClientMarkInfo': ClientMarkInfo(request.form),
-             'DateEndInfo': DateEndInfo(request.form)}
+             'DateEndInfo': DateEndInfo(request.form),
+             'BoxList': BoxList(request.form)}
 
     forms['ClientMarkInfo'].mark_name.choices = get_mark_list()
-
-    forms['BoxList'] = BoxList(request.form)
-    forms['BoxList'].box_clients.choices = [(i, i) for i in form_box_list().keys()]
+    forms['BoxList'].box_clients.choices = get_box_list()
 
     if request.method == 'POST':
         if 'get_list_c' in request.form:
@@ -121,8 +122,6 @@ def admin_info():
                 for j in range(len(info_c[i])):
                     ws.write(i, j, info_c[i][j])
             wb.save('report/client.xls')
-
-
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
@@ -143,7 +142,7 @@ def admin_info():
         if 'get_client' in request.form: #получить владельца указанного бокса
             f = forms['BoxList']
             if f.validate():
-                info_box = get_client(f)
+                info_box = get_client(f.box_clients.data)
 
                 return render_template('admin_info.html', f=forms, infs_box=info_box)
 
