@@ -2,27 +2,50 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
-    <form name="personal" role="form" method="post">
-        <h1>Личный кабинет пользователя {{client[1]}} {{client[0]}}</h1>
 
-           <ul class="nav nav-tabs" role="tablist">
-                <li class="active"><a href="#active" aria-controls="active" role="tab" data-toggle="tab">Активные квитанции</a></li>
-                <li><a href="#history" aria-controls="history" role="tab" data-toggle="tab">История платежей</a></li>
-            </ul>
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="active">
-                    {% for t in tickets_active %}
-                        {%include 'ticket.html'%}
-                    {% endfor %}
+    <h1>Личный кабинет пользователя {{client[1]}} {{client[0]}}</h1>
 
-                </div>
-                <div role="tabpanel" class="tab-pane" id="history">
-                    {% for t in tickets_not_active %}
-                        {%include 'ticket.html'%}
-                    {% endfor %}
-                </div>
-            </div>
-    </form>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a data-toggle="collapse" href="#add">Добавить машину</a></div>
+        <div class="panel-collapse collapse"  id="add">
+            <form name="personal_add_car" role="form" method="post">
+                {% for field in f['AddCar'] %}
+                        {{ render_field(field, data_toogle='tooltip') }}
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success" name="new_car">Добавить</button>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><a data-toggle="collapse" href="#del">Удалить машину</a></div>
+        <div class="panel-collapse collapse"  id="del">
+            <form name="personal_del_car" role="form" method="post">
+                {% for field in f['DeleteCar'] %}
+                        {{ render_field(field, data_toogle='tooltip') }}
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success" name="del_car">Удалить</button>
+            </form>
+        </div>
+    </div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#active" aria-controls="active" role="tab" data-toggle="tab">Активные квитанции</a></li>
+        <li><a href="#history" aria-controls="history" role="tab" data-toggle="tab">История платежей</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="active">
+            {% for t in tickets_active %}
+                {%include 'ticket.html'%}
+            {% endfor %}
+
+        </div>
+        <div role="tabpanel" class="tab-pane" id="history">
+            {% for t in tickets_not_active %}
+                {%include 'ticket.html'%}
+            {% endfor %}
+        </div>
+    </div>
 
 </div>
 {% endblock %}

@@ -100,5 +100,15 @@ class DateEndInfo(Form):
 
 class BoxList(Form):
     box_clients = SelectField('Номера занятых боксов', choices=[],
-                              description="Получить список с указанным боксом", coerce=int)
+                              description="Получить клиента с указанным боксом", coerce=int)
 
+#CLIENT
+
+class AddCar(Form):
+    mark_name = SelectField('Название марки', choices=[],
+                            description="Добавить машину с выбранной маркой")
+    car_number = StringField('Номер машины', [DataRequired(), Length(min=1, max=32)])
+
+class DeleteCar(Form):
+    car_number = SelectField('Номер машины', choices=[],
+                            description="Удалить выбранную машину")

@@ -15,17 +15,17 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                 <div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button>
-                <h4 class="modal-title">Боксы</h4>
+                <h4 class="modal-title">{{post[0]}}</h4>
                 </div>
 
                 <div class="modal-body">
-                     {% if (box[post]) %}
+                     {% if (box[post[0]]) %}
                         <table class="table table-bordered">
                             <tr>
                                 <th>Номер бокса</th>
                                 <th>Цена</th>
                             </tr>
-                        {% for b in box[post] %}
+                        {% for b in box[post[0]] %}
                                 <tr>
                                     <td>{{b[0]}}</td>
                                     <td>{{b[1]}}</td>
