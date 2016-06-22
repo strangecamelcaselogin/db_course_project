@@ -1,5 +1,5 @@
 from functools import wraps
-
+from datetime import datetime
 from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
@@ -130,11 +130,12 @@ def admin_info():
             for i in range(len(info_c)):
                 for j in range(len(info_c[i])):
                     ws.write(i, j, info_c[i][j])
+
             wb.save('report/client.xls')
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
-        if 'get_list_cwm' in request.form:
+        elif 'get_list_cwm' in request.form:
             f = forms['ClientMarkInfo']
             if f.validate():
                 info_cwm = get_list_cwm(f.mark_name.data)
@@ -144,14 +145,14 @@ def admin_info():
         elif 'get_list_cde' in request.form:
             f = forms['DateEndInfo']
             if f.validate():
-                info_cde = get_list_cde(f.date_end.data) # ???
+                info_cde = get_list_cde(datetime.strptime(f.date_end.data, '%d.%m.%Y').date())
 
                 return render_template('admin_info.html', f=forms, infs_cde=info_cde)
 
-        if 'get_client' in request.form: #получить владельца указанного бокса
+        elif 'get_client' in request.form:  # получить владельца указанного бокса
             f = forms['BoxList']
             if f.validate():
-                info_box = get_client(f.box_clients.data)
+                info_box = get_client_by_box(f.box_clients.data)
 
                 return render_template('admin_info.html', f=forms, infs_box=info_box)
 

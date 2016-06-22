@@ -31,15 +31,18 @@
                  <table  class="table table-bordered table-hover">
                      <caption>Клиенты</caption>
                      <tr>
+                         <th>ID</th>
                          <th>Фамилия</th>
                          <th>Имя</th>
                          <th>Отчество</th>
+                         <th>Адрес</th>
+                         <th>Телефон</th>
                      </tr>
                     {% for inf in infs_cwm %}
                      <tr>
-                         <td>{{inf[2]}}</td>
-                         <td>{{inf[0]}}</td>
-                         <td>{{inf[1]}}</td>
+                         {% for c in inf %}
+                             <td>{{ c }}</td>
+                         {% endfor %}
                      </tr>
                     {% endfor %}
                  </table>
@@ -56,26 +59,31 @@
             {% for field in f['DateEndInfo'] %}
                 {{ render_field(field, data_toogle='tooltip') }}
             {% endfor %}
+
              <div class="form-group">
                 <button type="submit" class="btn btn-success" name="get_list_cde">Получить список</button>
              </div>
+
              <div class="form-group">
                  {% if infs_cde %}
-                <table  class="table table-bordered table-hover">
-                     <caption>Клиенты</caption>
-                     <tr>
-                         <th>Фамилия</th>
-                         <th>Имя</th>
-                         <th>Отчество</th>
-                     </tr>
-                    {% for inf in infs_cde %}
-                     <tr>
-                         <td>{{inf[2]}}</td>
-                         <td>{{inf[0]}}</td>
-                         <td>{{inf[1]}}</td>
-                     </tr>
-                    {% endfor %}
-                 </table>
+                    <table  class="table table-bordered table-hover">
+                         <caption>Клиенты с истекающей арендой к указанной дате</caption>
+                         <tr>
+                             <th>ID</th>
+                             <th>Фамилия</th>
+                             <th>Имя</th>
+                             <th>Отчество</th>
+                             <th>Адрес</th>
+                             <th>Телефон</th>
+                         </tr>
+                        {% for inf in infs_cde %}
+                         <tr>
+                             {% for c in inf %}
+                                 <td>{{ c }}</td>
+                             {% endfor %}
+                         </tr>
+                        {% endfor %}
+                     </table>
                  {% endif %}
              </div>
 		</form>
@@ -89,23 +97,28 @@
              {% for field in f['BoxList'] %}
                 {{ render_field(field, data_toogle='tooltip') }}
              {% endfor %}
+
              <div class="form-group">
-                <button type="submit" class="btn btn-success" name="get_client">Узнать клиента</button>
+                <button type="submit" class="btn btn-success" name="get_client">Узнать</button>
              </div>
+
              <div class="form-group">
                  {% if infs_box %}
                 <table  class="table table-bordered table-hover">
-                     <caption>Боксы</caption>
+                     <caption>Клиент</caption>
                      <tr>
-                         <th>ID_Бокса</th>
-                         <th>Марка</th>
-                         <th>Суточная стоимость аренды (руб)</th>
+                         <th>ID</th>
+                         <th>Фамилия</th>
+                         <th>Имя</th>
+                         <th>Отчество</th>
+                         <th>Адрес</th>
+                         <th>Телефон</th>
                      </tr>
                     {% for inf in infs_box %}
                      <tr>
-                         <td>{{inf[2]}}</td>
-                         <td>{{inf[0]}}</td>
-                         <td>{{inf[1]}}</td>
+                         {% for c in inf %}
+                             <td>{{ c }}</td>
+                         {% endfor %}
                      </tr>
                     {% endfor %}
                  </table>
