@@ -62,9 +62,7 @@ def get_list_box_mark(brand):  #получаем все боксы и их ст�
                            AND Box.ID_Box NOT IN (SELECT ID_Box FROM Placed WHERE Busy = "YES")''',
                             {'brand': brand}).fetchall()
 
-        print(rows)
         if (len(rows) != 0):
-            print(rows)
             return(rows)
 
 
@@ -320,46 +318,46 @@ def get_list_cwm(mark_name):
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name, Clients.Second_Name
-                       FROM Clients, Cars
-                       WHERE (Cars.Brand = :mark_name) and (Clients.ID_client = Cars.ID_client)''',
-                    {'mark_name': mark_name})
-
-        info = cur.fetchall()
+        info = cur.execute('''SELECT DISTINCT Clients.ID_client, Second_Name, First_Name, Middle_Name, Address, Phone
+                              FROM Clients, Cars
+                              WHERE (Cars.Brand = :mark_name) AND (Clients.ID_client = Cars.ID_client)''',
+                           {'mark_name': mark_name}).fetchall()
 
     return info
 
 
-def get_list_cde(date): # ???
+def get_list_cde(date):
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Clients.First_Name, Clients.Middle_Name, Clients.Second_Name
-                       FROM Clients, Cars, Placed
-                       WHERE (Placed.Rent_End = :date) AND (Placed.Car_Number = Cars.Car_Number)
-                       AND (Clients.ID_client = Cars.ID_client)''',
-                    {'date': date})
-
-        info = cur.fetchall()
+        info = cur.execute('''SELECT ID_client, Second_Name, First_Name, Middle_Name, Address, Phone
+                              FROM Clients
+                              WHERE ID_client IN (SELECT ID_client
+                                                  FROM Cars, Placed
+                                                  WHERE Cars.Car_number = Placed.Car_Number
+                                                  AND Busy = "YES"
+                                                  AND Rent_End = :date)''',
+                           {'date': date}).fetchall()
 
     return info
 
 
-def get_client(box_number):
+def get_client_by_box(box_number):
 
     con = lite.connect(DATABASE)
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Clients.First_Name, Clients.Second_Name, Clients.Middle_Name, Clients.Address, Clients.Phone
-                       FROM  Clients, Placed, Cars
-                       WHERE (Placed.ID_Box = :box_number) AND (Placed.Car_Number = Cars.Car_Number)
-                       AND (Placed.Busy = 'YES')
-                       AND (Cars.ID_client = Clients.ID_Client)''',
-                    {'box_number': box_number})
+        info = cur.execute('''SELECT ID_client, Second_Name, First_Name, Middle_Name, Address, Phone
+                              FROM Clients
+                              WHERE ID_client IN (SELECT ID_client
+                                                  FROM Cars, Placed
+                                                  WHERE Cars.Car_Number = Placed.Car_Number
+                                                  AND Busy = "YES"
+                                                  AND ID_Box = :box_number)''',
+                           {'box_number': box_number}).fetchall()
 
-        info = cur.fetchall()
     return info
 
 

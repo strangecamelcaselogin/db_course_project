@@ -70,7 +70,7 @@ class CloseBoxForm(Form):
 
 class UpdateBoxForm(Form):
     u_cost = StringField('Число', [DataRequired()],
-                              description="Число, в которое следует увеличить цену")
+                         description="Число, в которое следует увеличить цену")
 
 
 class NewMarkForm(Form):
@@ -83,19 +83,15 @@ class DeleteMarkForm(Form):
                                description="Указанная марка будет удалена из перечня марок")
 
 
-# ADMIN INFO ????
-class AdminInfo(Form):
-    pass
-
-
+# ADMIN INFO
 class ClientMarkInfo(Form):
     mark_name = SelectField('Название марки', choices=[],
-                            description="Получить список с указанной маркой") # ???
-    #box_code = StringField('Код бокса', [DataRequired(), Length(min=1, max=32)])
+                            description="Получить список с указанной маркой")
 
 
 class DateEndInfo(Form):
-    date_end = StringField('Дата окончания аренды', [DataRequired(), Length(min=1, max=32)])
+    date_end = StringField('Дата окончания аренды', [DataRequired(), datetime_validator],
+                           description='ДД.ММ.ГГГГ')
 
 
 class BoxList(Form):
