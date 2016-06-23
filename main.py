@@ -48,6 +48,7 @@ def index():
     print(brands)
 
     box = {brand[0]: get_list_box_mark(brand[0]) for brand in brands}
+    get_marks_statistic()
     #path = count_mark()
     #print(path)
     return render_template('index.html', x=42, posts=brands, box=box, path_img='static/pie_brand.png')
@@ -120,12 +121,14 @@ def personal_area():
                     flash('Новый бокс добавлен')
                     return redirect('/personal')
 
-        phone = session['phone']
-        ticket_id = int(request.form['ticket_id'])
+        if 'ticket_id_refuse' in request.form:
+            print('ggggggg')
+            phone = session['phone']
+            ticket_id = int(request.form['ticket_id_refuse'])
 
-        refuse_box(phone, ticket_id)
+            refuse_box(phone, ticket_id)
 
-        return redirect('/personal')
+            return redirect('/personal')
 
     return render_template('personal.html', f=forms, tickets_active=ticket_active, tickets_not_active=ticket_not_active, client=client)
 
@@ -151,7 +154,9 @@ def admin_info():
                 for j in range(len(info_c[i])):
                     ws.write(i, j, info_c[i][j])
 
-            wb.save('report/client.xls')
+            #wb.save('report/client.xls')
+
+            wb.save('report.xls')
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 

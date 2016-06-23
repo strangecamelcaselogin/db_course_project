@@ -6,6 +6,9 @@ from flask import session
 
 from pylab import *
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 from settings import *
 
 
@@ -33,10 +36,15 @@ def get_marks_statistic():
             labels.append(row[0])
             sizes.append(row[1])
 
-        pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
-        savefig('/static/pie_brand.png')
+        plt.figure(num=1, figsize=(6, 6))
+        plt.axes(aspect=1)
+        plt.pie(sizes, labels=labels)
+        plt.savefig('static/pie_brand.png', format='png')
 
-        return '/static/pie_brand.png'
+        #pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+        #savefig('pie_brand.png')
+
+        return
 
 
 def get_box_list():
