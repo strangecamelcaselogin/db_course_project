@@ -7,7 +7,7 @@
 
     <div class="panel panel-default">
         <div class="panel-heading"><a data-toggle="collapse" href="#add">Добавить машину</a></div>
-        <div class="panel-collapse collapse"  id="add">
+        <div class="panel-collapse collapse"  id="add" style="padding: 15px;">
             <form name="personal_add_car" role="form" method="post">
                 {% for field in f['AddCar'] %}
                         {{ render_field(field, data_toogle='tooltip') }}
@@ -19,7 +19,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading"><a data-toggle="collapse" href="#del">Удалить машину</a></div>
-        <div class="panel-collapse collapse"  id="del">
+        <div class="panel-collapse collapse"  id="del" style="padding: 15px;">
             <form name="personal_del_car" role="form" method="post">
                 {% for field in f['DeleteCar'] %}
                         {{ render_field(field, data_toogle='tooltip') }}
@@ -35,15 +35,19 @@
     </ul>
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="active">
-            {% for t in tickets_active %}
-                {%include 'ticket.html'%}
-            {% endfor %}
+             <form name="ticket_id_refuse" role="form" method="post">
+                {% for t in tickets_active %}
+                    {%include 'ticket.html'%}
+                {% endfor %}
+             </form>
 
         </div>
         <div role="tabpanel" class="tab-pane" id="history">
-            {% for t in tickets_not_active %}
-                {%include 'ticket.html'%}
-            {% endfor %}
+            <form name="ticket_id" role="form" method="post">
+                {% for t in tickets_not_active %}
+                    {%include 'ticket.html'%}
+                {% endfor %}
+            </form>
         </div>
     </div>
 

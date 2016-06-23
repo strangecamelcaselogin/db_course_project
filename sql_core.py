@@ -6,6 +6,9 @@ from flask import session
 
 import matplotlib.pyplot as plt
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 from settings import *
 
 
