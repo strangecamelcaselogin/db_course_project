@@ -57,8 +57,9 @@ def get_list_box_mark(brand):  #получаем все боксы и их ст�
     with con:
         cur = con.cursor()
 
-        rows = cur.execute("SELECT Box.ID_Box, Box.Price FROM Box, Placed WHERE (Box.Brand = :brand) AND (Box.ID_Box = Placed.ID_Box) "
-                           "AND (Placed.Busy = 'NO') ",
+        rows = cur.execute('''SELECT Box.ID_Box, Box.Price FROM Box
+                           WHERE (Box.Brand = :brand)
+                           AND Box.ID_Box NOT IN (SELECT ID_Box FROM Placed WHERE Busy = "YES")''',
                             {'brand': brand}).fetchall()
 
         if (len(rows) != 0):

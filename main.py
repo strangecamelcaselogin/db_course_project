@@ -98,8 +98,28 @@ def personal_area():
         else:
             ticket_not_active += (ticket, )
 
-    print(ticket_not_active)
+    forms = {'AddCar': AddCar(request.form),
+             'DeleteCar': DeleteCar(request.form)}
+
+    forms['AddCar'].mark_name.choices = get_mark_list()
+    forms['DeleteCar'].car_number.choices = get_client_cars()
+
     if request.method == 'POST':
+
+        if 'new_car' in request.form:
+            f = forms['AddCar']
+            if f.validate():
+                if add_car(f.mark_name.data, f.car_number.data):
+                    flash('Новая машина добавлена')
+                    return redirect('/personal')
+
+        if 'del_car' in request.form:
+            f = forms['DeleteCar']
+            if f.validate():
+                if delete_car(f.car_number.data):
+                    flash('Новый бокс добавлен')
+                    return redirect('/personal')
+
         phone = session['phone']
         ticket_id = int(request.form['ticket_id'])
 
@@ -107,7 +127,7 @@ def personal_area():
 
         return redirect('/personal')
 
-    return render_template('personal.html', tickets_active=ticket_active, tickets_not_active=ticket_not_active, client=client)
+    return render_template('personal.html', f=forms, tickets_active=ticket_active, tickets_not_active=ticket_not_active, client=client)
 
 
 # ADMIN STUFF
