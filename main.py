@@ -43,14 +43,12 @@ def admin_required(f):
 @app.route('/')
 @app.route('/index')
 def index():
-    #posts = [{'brand': 'Mercedes', 'box': '1' }, {'brand': 'Renault', 'box': '3'}]
     brands = get_mark_list()
-    print(brands)
 
     box = {brand[0]: get_list_box_mark(brand[0]) for brand in brands}
+
     get_marks_statistic()
-    #path = count_mark()
-    #print(path)
+
     return render_template('index.html', x=42, posts=brands, box=box, path_img='static/pie_brand.png')
 
 
@@ -68,8 +66,7 @@ def rent():
                 date_end = datetime.strptime(form.date_end.data, '%d.%m.%Y').date()
                 number = form.number_auto.data
 
-                t = rent_box(date_start, date_end, number
-                             )
+                t = rent_box(date_start, date_end, number)
                 if t == True:
                     flash('Вы арендовали бокс')
                     return redirect('/personal')
@@ -88,16 +85,16 @@ def rent():
 @app.route('/personal', methods=['GET', 'POST'])
 @login_required
 def personal_area():
-    tickets = get_tickets_list()
     client = get_client_name()
 
-    ticket_active = ()
-    ticket_not_active = ()
+    tickets = get_tickets_list()
+    ticket_active = []
+    ticket_not_active = []
     for ticket in tickets:
         if ticket[6] == 'YES':
-            ticket_active += (ticket,)
+            ticket_active.append(ticket)
         else:
-            ticket_not_active += (ticket, )
+            ticket_not_active.append(ticket)
 
     forms = {'AddCar': AddCar(request.form),
              'DeleteCar': DeleteCar(request.form)}

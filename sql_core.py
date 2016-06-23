@@ -4,7 +4,7 @@ import sqlite3 as lite
 
 from flask import session
 
-from pylab import *
+import matplotlib.pyplot as plt
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,12 +39,7 @@ def get_marks_statistic():
         plt.figure(num=1, figsize=(6, 6))
         plt.axes(aspect=1)
         plt.pie(sizes, labels=labels)
-        plt.savefig('static/pie_brand.png', format='png')
-
-        #pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
-        #savefig('pie_brand.png')
-
-        return
+        plt.savefig(PIE + '\\pie_brand.png', format='png')
 
 
 def get_box_list():
@@ -87,8 +82,6 @@ def get_tickets_list():
                     {'phone': session['phone']})
 
         rows = cur.fetchall()
-
-        print(rows)
 
     return reversed(rows)
 
