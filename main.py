@@ -88,6 +88,7 @@ def personal_area():
     client = get_client_name()
 
     tickets = get_tickets_list()
+
     ticket_active = []
     ticket_not_active = []
     for ticket in tickets:
@@ -119,7 +120,6 @@ def personal_area():
                     return redirect('/personal')
 
         if 'ticket_id_refuse' in request.form:
-            print('ggggggg')
             phone = session['phone']
             ticket_id = int(request.form['ticket_id_refuse'])
 
@@ -131,7 +131,7 @@ def personal_area():
 
 
 # ADMIN STUFF
-@app.route('/admin_info', methods=['GET', 'POST'])  # не работает :/
+@app.route('/admin_info', methods=['GET', 'POST'])
 @admin_required
 def admin_info():
     forms = {'ClientMarkInfo': ClientMarkInfo(request.form),
@@ -151,9 +151,7 @@ def admin_info():
                 for j in range(len(info_c[i])):
                     ws.write(i, j, info_c[i][j])
 
-            #wb.save('report/client.xls')
-
-            wb.save('report.xls')
+            wb.save(PROJECT_ROOT + '\\report\\client.xls')
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
@@ -263,7 +261,7 @@ def login_():
         if form.validate():
 
             if login(form):
-                flash('Вы вошли как {} (имечко бы надо)'.format(form.phone.data))
+                flash('Вы вошли как {}'.format(form.phone.data))
                 return redirect('/index')
 
             else:
@@ -299,8 +297,14 @@ def logout():
 
 ################################################
 
+def set_sec_key(path):
+    with open(path, 'r') as f:
+        tmp = f.read()
+
+    return tmp
+
 
 if __name__ == '__main__':
-    app.secret_key = 'wtf_dude_its_a_public_secret_key!!'  # !!!!!!!!!
+    app.secret_key = 'true_sec_key'
     app.run(debug=True)
 

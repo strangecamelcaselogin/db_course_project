@@ -74,16 +74,23 @@ def get_tickets_list():
     with con:
         cur = con.cursor()
 
-        cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start,
-                        Placed.Rent_End, Placed.Busy
-                       FROM Box, Placed, Cars, Clients
-                       WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
-                       AND (Clients.Phone = :phone) AND (Box.ID_Box = Placed.ID_Box)''',
-                    {'phone': session['phone']})
+        tmp = cur.execute('''SELECT Placed.Ticket_Number, Cars.Car_Number, Box.Price, Box.ID_Box, Placed.Rent_Start,
+                             Placed.Rent_End, Placed.Busy
+                             FROM Box, Placed, Cars, Clients
+                             WHERE (Placed.Car_Number = Cars.Car_Number) AND (Clients.ID_client = Cars.ID_client)
+                             AND (Clients.Phone = :phone) AND (Box.ID_Box = Placed.ID_Box)''',
+                          {'phone': session['phone']}).fetchall()
 
-        rows = cur.fetchall()
+        result = []
+        for row in tmp:
+            result.append(list(row))
 
-    return reversed(rows)
+        for row in result:
+            tmp = datetime.strptime(row[5], '%Y-%m-%d') - datetime.strptime(row[4], '%Y-%m-%d')
+            row.append(tmp.days)
+            row[2] = int(row[2]) * tmp.days
+
+    return result
 
 
 def get_client_name():
