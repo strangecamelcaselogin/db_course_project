@@ -1,46 +1,26 @@
-﻿{% extends "base.html" %}
+﻿{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
 {% block content %}
 <div class="container-fluid" style="padding: 15px">
 	<h1>Регистрация</h1>
 	<div class="form-group" style="text-align: center">
-		<form name="reg" role="form" class="form-horizontal">
-			<div class="form-group">
-				<label for="sec_name" class="col-sm-4 control-label">Фамилия</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" id="sec_name" placeholder="Введите имя">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="name" class="col-sm-4 control-label">Имя</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" id="name"  placeholder="Введите имя">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="mid_name" class="col-sm-4 control-label">Отчество</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" id="mid_name"  placeholder="Введите имя">
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="adress" class="col-sm-4 control-label">Адрес</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" id="adress"  placeholder="Введите имя">
-				</div>
-			</div>
-			<div class="form-group" >
-				<label for="phone" class="col-sm-4 control-label">Телефон</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" id="phone" placeholder="Введите имя">
-				</div>
-			</div>
+		<form name="reg" role="form" class="form-horizontal" method="post">
+            {{ render_field(form['phone'], data_toggle='tooltip') }}
+
+            {{ render_field(form['second_name'], data_toggle='tooltip') }}
+
+            {{ render_field(form['name'], data_toggle='tooltip') }}
+
+            {{ render_field(form['mid_name'], data_toggle='tooltip') }}
+
+            {{ render_field(form['address'], data_toggle='tooltip') }}
+
+            {{ render_field(form['password'], data_toggle='tooltip') }}
+
+            {{ render_field(form['confirm_password'], data_toggle='tooltip') }}
+
 			<button type="submit" class="btn btn-success">Зарегестрировать</button>
-			<div class="form-group" style="margin-top: 10px;">
-				<label for="owner_code" class="col-sm-4 control-label">Код владельца</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" id="owner_code"  placeholder="Введите имя">
-				</div>
-			</div>
+
 		</form>
 	</div>
 </div>

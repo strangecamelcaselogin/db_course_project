@@ -1,0 +1,18 @@
+﻿{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid" style="padding: 15px">
+	<h2>Предоставить бокс</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="box_owner" role="form" method="post">
+
+            {% for field in f %}
+                {{ render_field(field, data_toogle='tooltip') }}
+            {% endfor %}
+
+             <button type="submit" class="btn btn-success" name="rent">Предоставить бокс</button>
+
+		</form>
+	</div>
+</div>
+{% endblock %}

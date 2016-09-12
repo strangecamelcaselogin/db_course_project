@@ -1,0 +1,130 @@
+﻿{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid" style="padding: 15px">
+	<h2>Справка о клиентах</h2>
+	<div class="form-group" style="text-align: center">
+
+		<form name="ref_owner" role="form" method="post">
+             <div class="form-group">
+                <button type="submit" class="btn btn-success" name="get_list_c">Получить список клиентов в виде .xsl файла</button>
+                 <div style="color: #d5d5d5;">*<u>Файл находится в папке report</u></div>
+             </div>
+		</form>
+	</div>
+
+	<hr>
+
+	<h2>Справка о клиентах с определенной маркой автомобиля</h2>
+	<div class="form-group" style="text-align: center">
+
+		<form name="ref_mark_owner" role="form" method="post">
+             {% for field in f['ClientMarkInfo'] %}
+                {{ render_field(field, data_toogle='tooltip') }}
+            {% endfor %}
+
+             <div class="form-group">
+                <button type="submit" class="btn btn-success" name="get_list_cwm">Получить список</button>
+             </div>
+             <div class="form-group">
+                 {% if infs_cwm %}
+                 <table  class="table table-bordered table-hover">
+                     <caption>Клиенты</caption>
+                     <tr>
+                         <th>ID</th>
+                         <th>Фамилия</th>
+                         <th>Имя</th>
+                         <th>Отчество</th>
+                         <th>Адрес</th>
+                         <th>Телефон</th>
+                     </tr>
+                    {% for inf in infs_cwm %}
+                     <tr>
+                         {% for c in inf %}
+                             <td>{{ c }}</td>
+                         {% endfor %}
+                     </tr>
+                    {% endfor %}
+                 </table>
+                 {% endif %}
+             </div>
+		</form>
+	</div>
+
+	<hr>
+
+	<h2>Справка о клиентах, у который срок аренды истекает к указанной дате</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="ref_owner_date" role="form" method="post">
+            {% for field in f['DateEndInfo'] %}
+                {{ render_field(field, data_toogle='tooltip') }}
+            {% endfor %}
+
+             <div class="form-group">
+                <button type="submit" class="btn btn-success" name="get_list_cde">Получить список</button>
+             </div>
+
+             <div class="form-group">
+                 {% if infs_cde %}
+                    <table  class="table table-bordered table-hover">
+                         <caption>Клиенты с истекающей арендой к указанной дате</caption>
+                         <tr>
+                             <th>ID</th>
+                             <th>Фамилия</th>
+                             <th>Имя</th>
+                             <th>Отчество</th>
+                             <th>Адрес</th>
+                             <th>Телефон</th>
+                         </tr>
+                        {% for inf in infs_cde %}
+                         <tr>
+                             {% for c in inf %}
+                                 <td>{{ c }}</td>
+                             {% endfor %}
+                         </tr>
+                        {% endfor %}
+                     </table>
+                 {% endif %}
+             </div>
+		</form>
+	</div>
+
+    <hr>
+
+    <h2>Справка о клиенте, занимающем бокс</h2>
+	<div class="form-group" style="text-align: center">
+		<form name="ref_owner_date" role="form" method="post">
+             {% for field in f['BoxList'] %}
+                {{ render_field(field, data_toogle='tooltip') }}
+             {% endfor %}
+
+             <div class="form-group">
+                <button type="submit" class="btn btn-success" name="get_client">Узнать</button>
+             </div>
+
+             <div class="form-group">
+                 {% if infs_box %}
+                <table  class="table table-bordered table-hover">
+                     <caption>Клиент</caption>
+                     <tr>
+                         <th>ID</th>
+                         <th>Фамилия</th>
+                         <th>Имя</th>
+                         <th>Отчество</th>
+                         <th>Адрес</th>
+                         <th>Телефон</th>
+                     </tr>
+                    {% for inf in infs_box %}
+                     <tr>
+                         {% for c in inf %}
+                             <td>{{ c }}</td>
+                         {% endfor %}
+                     </tr>
+                    {% endfor %}
+                 </table>
+                  {% endif %}
+             </div>
+		</form>
+	</div>
+</div>
+{% endblock %}
