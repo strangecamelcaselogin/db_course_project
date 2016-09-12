@@ -1,2 +1,2 @@
 # web_db
-usless project
+Обычная курсовая работа. Python, Flask, SQLite.
