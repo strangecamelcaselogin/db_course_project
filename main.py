@@ -218,7 +218,7 @@ def admin_manage():
 
             if f.validate():
                 if update_box(float(f.u_cost.data.replace(',', '.'))):
-                    flash('Маша не может в буковы')
+                    flash('Цена обновлена.')
                     return redirect('/admin_manage')
 
                 else:
