@@ -4,10 +4,10 @@ import sqlite3 as lite
 
 from flask import session
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
-import numpy as np
-import matplotlib.pyplot as plt
+#import numpy as np
+#import matplotlib.pyplot as plt
 
 from settings import *
 
@@ -22,7 +22,7 @@ def get_mark_list():
 
         return [(row[0], row[0]) for row in rows]
 
-
+'''
 def get_marks_statistic():
     con = lite.connect(DATABASE)
     with con:
@@ -40,7 +40,7 @@ def get_marks_statistic():
         plt.axes(aspect=1)
         plt.pie(sizes, labels=labels)
         plt.savefig(PIE + '\\pie_brand.png', format='png')
-
+'''
 
 def get_box_list():
     con = lite.connect(DATABASE)

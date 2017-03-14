@@ -8,7 +8,7 @@ from sql_core import *
 
 from forms import *
 
-import xlrd, xlwt
+#import xlrd, xlwt
 
 app = Flask(__name__)
 
@@ -47,7 +47,7 @@ def index():
 
     box = {brand[0]: get_list_box_mark(brand[0]) for brand in brands}
 
-    get_marks_statistic()
+   # get_marks_statistic()
 
     return render_template('index.html', x=42, posts=brands, box=box, path_img='static/pie_brand.png')
 
@@ -145,13 +145,13 @@ def admin_info():
         if 'get_list_c' in request.form:
             info_c = get_list_c()
 
-            wb = xlwt.Workbook()
-            ws = wb.add_sheet('Test')
-            for i in range(len(info_c)):
-                for j in range(len(info_c[i])):
-                    ws.write(i, j, info_c[i][j])
+            #wb = xlwt.Workbook()
+            #ws = wb.add_sheet('Test')
+            #for i in range(len(info_c)):
+            #    for j in range(len(info_c[i])):
+            #        ws.write(i, j, info_c[i][j])
 
-            wb.save(PROJECT_ROOT + '\\report\\client.xls')
+            #wb.save(PROJECT_ROOT + '\\report\\client.xls')
 
             return render_template('admin_info.html', f=forms, infs_c=info_c)
 
