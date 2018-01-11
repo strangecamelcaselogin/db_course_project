@@ -385,7 +385,7 @@ def login(form):
         if cnt == 1:
             session['logged_in'] = True
             session['phone'] = phone
-            if phone == ADMIN:
+            if phone == ADMIN_PHONE:
                 session['is_admin'] = True
 
             return True

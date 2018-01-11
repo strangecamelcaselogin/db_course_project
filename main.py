@@ -1,10 +1,11 @@
 from functools import wraps
-from datetime import datetime
 from flask import Flask
 from flask import render_template, redirect, flash, \
     request, session, abort, g, url_for
 
 from sql_core import *
+
+from settings import *
 
 from forms import *
 
@@ -305,6 +306,6 @@ def set_sec_key(path):
 
 
 if __name__ == '__main__':
-    app.secret_key = 'true_sec_key'
-    app.run(debug=True)
+    app.secret_key = SECRET_KEY
+    app.run(debug=True, host=HOST, port=PORT)
 
